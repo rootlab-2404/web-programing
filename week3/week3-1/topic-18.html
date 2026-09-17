@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>topic 18</title>
+    <style>
+        /* Default: content-box */
+        .avatar-content-box {
+            box-sizing: content-box;
+            width: 150px;
+            padding: 8px;
+            border: 4px solid #14b8a6;
+            background: #f0fdfa;
+            margin-bottom: 16px;
+        }
+        /* total = 150 + 8*2 + 4*2 = 174px */
+
+        /* Better: border-box */
+        .avatar-border-box {
+            box-sizing: border-box;
+            width: 150px;
+            padding: 8px;
+            border: 4px solid #db2777;
+            background: #fdf2f8;
+        }
+        /* total = exactly 150px */
+
+        p { font-size: 13px; color: #475569; margin-top: 4px; }
+
+    </style>
+</head>
+<body>
+    <div class="avatar-content-box">content-box</div>
+    <p>→ Actual width = 150 + 8*2 + 4*2 = <strong>174px</strong></p>
+
+    <div class="avatar-border-box">border-box</div>
+    <p>→ Actual width = exactly <strong>150px</strong></p>
+</body>
+</html>

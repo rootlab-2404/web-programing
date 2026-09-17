@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>topic 23</title>
+    <style>
+        p              { color: gray; }     /* 0,0,0,1 */
+        .passing       { color: blue; }     /* 0,0,1,0 */
+        p.passing      { color: purple; }   /* 0,0,1,1 */
+        #honor-roll    { color: green; }    /* 0,1,0,0 */
+
+        /* Combinators add up */
+        div p          { font-style: italic; }
+        div .passing   { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <p>Regular grade entry — gray</p>
+    <p class="passing">Passing grade — purple (p.passing wins)</p>
+    <p class="passing" id="honor-roll">Honor roll student — green (#honor-roll wins)</p>
+
+</body>
+</html>

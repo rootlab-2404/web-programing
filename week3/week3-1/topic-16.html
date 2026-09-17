@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>topic 16</title>
+    <style>
+        .alert {
+            background: #fff7ed;
+            border: 2px solid #f97316;
+            width: 300px;
+            font-family: sans-serif;
+            margin-bottom: 10px;
+        }
+
+        .p-none   { padding: 0; }
+        .p-all    { padding: 20px; }
+        .p-custom { padding: 10px 40px; }
+        .p-sides  { padding-left: 32px; padding-right: 32px; }
+
+        .label {
+            font-size: 11px;
+            color: #c2410c;
+            display: block;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="alert p-none">
+        <span class="label">padding: 0</span>
+        New message received
+    </div>
+    <div class="alert p-all">
+        <span class="label">padding: 20px</span>
+        New message received
+    </div>
+    <div class="alert p-custom">
+        <span class="label">padding: 10px 40px</span>
+        New message received
+    </div>
+    <div class="alert p-sides">
+        <span class="label">padding-left/right: 32px only</span>
+        New message received
+    </div>
+</body>
+</html>

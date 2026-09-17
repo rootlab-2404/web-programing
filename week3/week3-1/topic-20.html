@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>topic 20</title>
+    <style>
+        .email { padding: 16px; margin: 8px 0; border: 2px solid #6366f1; background: #eef2ff; }
+
+        .hidden-none       { display: none; }        /* archived — takes no space */
+        .hidden-visibility { visibility: hidden; }    /* hidden but reserves space */
+    </style>
+</head>
+<body>
+    <div class="email">Email 1 — visible (unread)</div>
+    <div class="email hidden-none">Email 2 — display:none (archived, gone)</div>
+    <div class="email">Email 3 — no gap above from email 2</div>
+    <div class="email hidden-visibility">Email 4 — visibility:hidden (space kept)</div>
+    <div class="email">Email 5 — there IS a gap above from email 4</div>
+
+    <hr>
+    <button onclick="document.getElementById('draft').style.display = document.getElementById('draft').style.display === 'none' ? 'block' : 'none'">
+        Toggle Draft
+    </button>
+<div id="draft" class="email" style="display:none">Draft: "Meeting rescheduled to 3 PM"</div>
+</body>
+</html>

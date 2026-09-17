@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>topic 22</title>
+    <style>
+        p                { color: gray; }      /* type = 1 */
+        .sale-price      { color: blue; }      /* class = 10 */
+        #featured        { color: green; }     /* ID = 100 */
+        p.sale-price     { color: purple; }    /* class+type = 11 */
+        #featured p      { color: orange; }    /* ID+type = 101 */
+
+        /* Winner: #featured p (101) → text will be orange */
+
+        /* Bad practice — avoid! */
+        p { color: red !important; }  /* overrides EVERYTHING — hard to debug */
+    </style>
+</head>
+<body>
+    <div id="featured">
+        <p class="sale-price">$49.99</p>
+    </div>
+</body>
+</html>

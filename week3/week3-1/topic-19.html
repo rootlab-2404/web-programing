@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>topic 19</title>
+    <style>
+        /* span is inline by default — force it to block */
+        .forced-block {
+            display: block;
+            background: #fefce8;
+            border: 2px solid #ca8a04;
+            padding: 12px;
+            margin: 6px 0;
+            width: 320px;
+        }
+
+        /* recipe menu links — each fills its own row */
+        nav a {
+            display: block;
+            padding: 10px 16px;
+            background: #7c2d12;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 2px;
+        }
+        nav a:hover { background: #ea580c; }
+    </style>
+</head>
+<body>
+    <span class="forced-block">Step 1: Preheat the oven to 180°C</span>
+    <span class="forced-block">Step 2: Mix flour, sugar, and eggs</span>
+
+    <nav>
+        <a href="#">Ingredients</a>
+        <a href="#">Instructions</a>
+        <a href="#">Nutrition Facts</a>
+    </nav>
+</body>
+</html>

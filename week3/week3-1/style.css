@@ -1,0 +1,79 @@
+/* used for topic 3 */
+
+.topic-3{
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  line-height: 2px;
+  max-width: 75ch;
+  color: blue;
+}
+.headingtop-3{
+  color: teal;        
+  font-size: 6rem;       
+  font-weight: 200;    
+  text-align: center;
+}
+
+
+
+/*used for topic 5*/
+/*id selector targets the only element that has unique id*/
+
+#root{
+  background-color: rgb(225, 225, 17);
+  color: #000000;
+  font-size: 2.8rem;
+  padding-left: 14px;
+  border-left: 15px double rgb(214, 38, 158) ;
+}
+
+#lab{
+  background: teal;
+  padding: 36px;
+  border-radius: 12px;
+}
+
+
+/*used for topic 6*/
+
+.book {
+  border: 2px solid #ccc;
+  padding: 15px;
+  margin: 8px;
+  border-radius: 6px;
+}
+
+.bestseller {
+  border-color: gold;
+  background: #fffbea;
+}
+
+.discount {
+  font-weight: bold;
+  color: crimson;
+}
+
+/* used for topic 9 */
+
+.shipped {
+  background-color: #dcfce7;  /* light green */
+  color: #166534;             /* dark green text */
+  padding: 20px 30px;
+  border-radius: 8px;
+}
+
+.delayed {
+  background-color: #fef3c7;  /* light amber */
+  color: #92400e;             /* dark amber text */
+  padding: 12px 16px;
+  border-left: 4px solid #f59e0b;
+}
+
+.cancelled {
+  background-color: #1e293b;  /* dark background */
+  color: #f87171;             /* light red text */
+  padding: 20px;
+}
+
+
+
+
