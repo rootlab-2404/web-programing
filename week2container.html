@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 2 Container</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    a{
+      text-decoration: none;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #eef2f7;
+      color: #1f2937;
+      min-height: 100vh;
+      padding: 32px 16px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .weeks {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .week-card {
+      width: 100%;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 24px;
+      background-color: #e0e7ff;
+      border: 2px solid #6366f1;
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #3730a3;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .week-card:hover {
+      transform: translateY(-2px);
+      background-color: #c7d2fe;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 12px;
+      }
+
+      .week-card {
+        height: 50px;
+        font-size: 1rem;
+        padding: 0 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="weeks">
+      <div class="week-card"><a href="./week2_1.html">Week 2_1</a></div>
+      <div class="week-card"><a href="./week2_2.html">Week 2_2</a></div>
+    </div>
+  </div>
+</body>
+</html>
