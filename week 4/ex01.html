@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 4 Exercise 1</title>
+<style>
+  :root {
+    --accent: #1a56db;
+    --accent-dark: #1241a8;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --done: #16a34a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 16px;
+  }
+  .card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--card);
+    border-radius: 20px;
+    padding: 28px 24px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  }
+  h1 { font-size: 18px; margin: 0 0 18px; color: var(--muted); font-weight: 600; }
+
+  .swatches { display: flex; justify-content: center; gap: 10px; margin-bottom: 22px; }
+  .swatch {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 3px solid transparent;
+    outline: 2px solid transparent;
+    cursor: pointer;
+    transition: transform .15s, outline-color .15s;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch.active { outline-color: var(--text); }
+
+  #clicker {
+    width: 100%;
+    padding: 16px 32px;
+    font-size: 18px; font-weight: 600;
+    border: none; border-radius: 12px;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--accent-dark);
+    transition: background .3s, box-shadow .3s, transform .08s;
+  }
+  #clicker:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--accent-dark); }
+  #clicker.done { background: var(--done) !important; box-shadow: 0 4px 0 #0f7a36; }
+
+  #count {
+    font-size: 64px; font-weight: 800;
+    margin: 20px 0 4px;
+    color: var(--accent);
+    transition: color .3s;
+  }
+  #count.bump { animation: bump .25s ease; }
+  @keyframes bump { 50% { transform: scale(1.25); } }
+  #count.done { color: var(--done); }
+
+  .bar { height: 10px; background: #e5e7eb; border-radius: 99px; overflow: hidden; margin: 14px 0; }
+  #fill { height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .3s, background .3s; }
+  #fill.done { background: var(--done); }
+
+  #message { font-size: 16px; color: var(--muted); min-height: 24px; margin: 8px 0 16px; }
+
+  #reset {
+    border: 1px solid #d1d5db; background: transparent;
+    color: var(--muted); padding: 8px 18px; border-radius: 8px;
+    cursor: pointer; font-size: 14px;
+  }
+  #reset:hover { background: #f3f4f6; }
+
+  .pop {
+    position: fixed; width: 8px; height: 8px; border-radius: 2px;
+    pointer-events: none; animation: fly 900ms ease-out forwards;
+  }
+  @keyframes fly {
+    to { transform: translate(var(--x), var(--y)) rotate(360deg); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Click Counter</h1>
+
+    <div class="swatches" id="swatches" aria-label="Rang tanlash"></div>
+
+    <button id="clicker">Click me!</button>
+    <p id="count">0</p>
+
+    <div class="bar"><div id="fill"></div></div>
+    <p id="message">Keep clicking...</p>
+
+    <button id="reset">Restart</button>
+  </div>
+
+  <script>
+    const GOAL = 5;
+    const COLORS = [
+      { name: "Ko'k",      main: "#1a56db", dark: "#1241a8" },
+      { name: "Binafsha",  main: "#7c3aed", dark: "#5b21b6" },
+      { name: "Pushti",    main: "#db2777", dark: "#9d174d" },
+      { name: "Qizil",     main: "#dc2626", dark: "#991b1b" },
+      { name: "To'q sariq",main: "#ea580c", dark: "#9a3412" },
+      { name: "Moviy",     main: "#0891b2", dark: "#155e75" }
+    ];
+
+    const button = document.getElementById("clicker");
+    const countEl = document.getElementById("count");
+    const messageEl = document.getElementById("message");
+    const fill = document.getElementById("fill");
+    const resetBtn = document.getElementById("reset");
+    const swatchBox = document.getElementById("swatches");
+
+    let count = 0;
+
+    function setColor(i) {
+      const c = COLORS[i];
+      document.documentElement.style.setProperty("--accent", c.main);
+      document.documentElement.style.setProperty("--accent-dark", c.dark);
+      document.querySelectorAll(".swatch").forEach((s, idx) =>
+        s.classList.toggle("active", idx === i));
+      try { localStorage.setItem("clickerColor", i); } catch (e) {}
+    }
+
+    COLORS.forEach((c, i) => {
+      const s = document.createElement("button");
+      s.className = "swatch";
+      s.style.background = c.main;
+      s.title = c.name;
+      s.setAttribute("aria-label", c.name);
+      s.addEventListener("click", () => setColor(i));
+      swatchBox.appendChild(s);
+    });
+
+    let saved = 0;
+    try { saved = parseInt(localStorage.getItem("clickerColor")) || 0; } catch (e) {}
+    setColor(saved);
+
+    function confetti(x, y) {
+      const colors = ["#fbbf24", "#f472b6", "#60a5fa", "#34d399", "#a78bfa"];
+      for (let i = 0; i < 24; i++) {
+        const p = document.createElement("div");
+        p.className = "pop";
+        p.style.left = x + "px";
+        p.style.top = y + "px";
+        p.style.background = colors[i % colors.length];
+        p.style.setProperty("--x", (Math.random() * 300 - 150) + "px");
+        p.style.setProperty("--y", (Math.random() * -250 - 20) + "px");
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 900);
+      }
+    }
+
+    button.addEventListener("click", (e) => {
+      count++;
+      countEl.textContent = count;
+      countEl.classList.remove("bump");
+      void countEl.offsetWidth;
+      countEl.classList.add("bump");
+      fill.style.width = Math.min(count / GOAL * 100, 100) + "%";
+
+      if (count >= GOAL) {
+        button.classList.add("done");
+        countEl.classList.add("done");
+        fill.classList.add("done");
+        messageEl.textContent = count === GOAL
+          ? "🎉 Good job, you got it!"
+          : "🔥 Continue, " + count + " clicks!";
+        if (count === GOAL) confetti(e.clientX, e.clientY);
+      } else {
+        messageEl.textContent = (GOAL - count) + " remaining";
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
+      count = 0;
+      countEl.textContent = 0;
+      fill.style.width = "0";
+      [button, countEl, fill].forEach(el => el.classList.remove("done"));
+      messageEl.textContent = "Keep clicking...";
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 4 Exercise 2</title>
+<style>
+  :root {
+    --accent: #1a56db;
+    --bg: #eef2fb;
+    --card-bg: #ffffff;
+    --card-border: #d6deef;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --chip-bg: #e8eefc;
+  }
+  body.dark {
+    --bg: #0f1424;
+    --card-bg: #1a2340;
+    --card-border: #3a4a70;
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+    --chip-bg: #263158;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: background .3s, color .3s;
+  }
+  .card {
+    width: 100%;
+    max-width: 300px;
+    padding: 28px 24px;
+    border-radius: 20px;
+    text-align: center;
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    transition: background .3s, border-color .3s;
+  }
+  .avatar {
+    width: 84px; height: 84px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 40px; margin-bottom: 12px;
+    background: var(--accent);
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 25%, transparent);
+    transition: background .3s, box-shadow .3s;
+  }
+  h2 { margin: 4px 0; font-size: 22px; }
+  .role { margin: 0 0 14px; color: var(--muted); font-size: 15px; }
+
+  .tags { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+  .tag {
+    font-size: 12px; font-weight: 600;
+    padding: 4px 10px; border-radius: 99px;
+    background: var(--chip-bg); color: var(--accent);
+    transition: background .3s, color .3s;
+  }
+
+  .swatches { display: flex; justify-content: center; gap: 10px; margin-bottom: 18px; }
+  .swatch {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 3px solid transparent;
+    outline: 2px solid transparent;
+    cursor: pointer;
+    transition: transform .15s, outline-color .15s;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch.active { outline-color: var(--text); }
+
+  #toggle-btn {
+    padding: 10px 22px;
+    border: none; border-radius: 99px;
+    font-weight: 700; font-size: 14px;
+    cursor: pointer;
+    background: var(--accent); color: #fff;
+    transition: background .3s, transform .1s;
+  }
+  #toggle-btn:active { transform: scale(.96); }
+</style>
+</head>
+<body>
+  <div id="card" class="card">
+    <div class="avatar">👩‍💻</div>
+    <h2>Kim Jisoo</h2>
+    <p class="role">Web Programming Student</p>
+
+    <div class="tags">
+      <span class="tag">HTML</span>
+      <span class="tag">CSS</span>
+      <span class="tag">JavaScript</span>
+    </div>
+
+    <div class="swatches" id="swatches" aria-label="Choose accent color"></div>
+
+    <button id="toggle-btn">🌙 Dark Mode</button>
+  </div>
+
+  <script>
+    const COLORS = [
+      { name: "Blue",   value: "#1a56db" },
+      { name: "Purple", value: "#7c3aed" },
+      { name: "Pink",   value: "#db2777" },
+      { name: "Red",    value: "#dc2626" },
+      { name: "Orange", value: "#ea580c" },
+      { name: "Teal",   value: "#0891b2" }
+    ];
+
+    const btn = document.getElementById("toggle-btn");
+    const swatchBox = document.getElementById("swatches");
+
+    function setColor(i) {
+      document.documentElement.style.setProperty("--accent", COLORS[i].value);
+      document.querySelectorAll(".swatch").forEach((s, idx) =>
+        s.classList.toggle("active", idx === i));
+      try { localStorage.setItem("cardColor", i); } catch (e) {}
+    }
+
+    function setDark(on) {
+      document.body.classList.toggle("dark", on);
+      btn.textContent = on ? "☀️ Light Mode" : "🌙 Dark Mode";
+      try { localStorage.setItem("cardDark", on ? "1" : "0"); } catch (e) {}
+    }
+
+    COLORS.forEach((c, i) => {
+      const s = document.createElement("button");
+      s.className = "swatch";
+      s.style.background = c.value;
+      s.title = c.name;
+      s.setAttribute("aria-label", c.name);
+      s.addEventListener("click", () => setColor(i));
+      swatchBox.appendChild(s);
+    });
+
+    btn.addEventListener("click", () => {
+      setDark(!document.body.classList.contains("dark"));
+    });
+
+    let savedColor = 0, savedDark = false;
+    try {
+      savedColor = parseInt(localStorage.getItem("cardColor")) || 0;
+      savedDark = localStorage.getItem("cardDark") === "1";
+    } catch (e) {}
+    setColor(savedColor);
+    setDark(savedDark);
+  </script>
+</body>
+</html>

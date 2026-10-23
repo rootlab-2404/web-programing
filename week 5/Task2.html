@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 5 Exercise 2</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: Tahoma, Geneva, sans-serif;
+    background: #fff7ed;
+    color: #292524;
+  }
+
+  header {
+    background: #ea580c;
+    color: #fff;
+    text-align: center;
+    padding: 28px 16px;
+  }
+
+  header h1 { margin: 0 0 6px; font-size: 26px; }
+  header p { margin: 0; opacity: .9; }
+
+  main {
+    max-width: 900px;
+    margin: 24px auto;
+    padding: 0 16px 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid #fed7aa;
+    border-radius: 16px;
+    padding: 20px;
+  }
+
+  .card h2 {
+    margin: 0 0 12px;
+    font-size: 17px;
+    color: #c2410c;
+  }
+
+  .badge {
+    display: inline-block;
+    background: #ffedd5;
+    color: #c2410c;
+    border-radius: 99px;
+    padding: 2px 10px;
+    font-size: 13px;
+    margin-right: 6px;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border: 2px solid #fed7aa;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+  }
+
+  input:focus { border-color: #ea580c; }
+
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    background: #ea580c;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  button:hover { background: #c2410c; }
+
+  button.gray { background: #78716c; }
+  button.gray:hover { background: #57534e; }
+
+  button.red { background: #dc2626; }
+  button.red:hover { background: #b91c1c; }
+
+  .out {
+    margin: 12px 0 0;
+    min-height: 22px;
+    white-space: pre-line;
+    font-weight: bold;
+    color: #9a3412;
+  }
+
+  .out.bad { color: #dc2626; }
+
+  #demoBox {
+    padding: 14px;
+    border-radius: 10px;
+    background: #ffedd5;
+    color: #7c2d12;
+    margin-bottom: 10px;
+    transition: background .3s, color .3s;
+  }
+
+  #demoBox.alt {
+    background: #292524;
+    color: #fed7aa;
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <h1>JavaScript Practice</h1>
+    <p>Prepared by Asadbek</p>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>1. Variables and Output</h2>
+      <div class="row">
+        <button id="showInfo">Show Student Info</button>
+      </div>
+      <p class="out" id="infoOut"></p>
+    </div>
+
+    <div class="card">
+      <h2>2. Change HTML Elements</h2>
+      <div id="demoBox">This box can change its look.</div>
+      <div class="row">
+        <button id="toggleBox">Toggle Style</button>
+        <button id="editBox" class="gray">Edit Text</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>3. Read User Input</h2>
+      <input type="text" id="nameField" placeholder="Type your name">
+      <div class="row">
+        <button id="greetBtn">Say Hello</button>
+      </div>
+      <p class="out" id="greetOut"></p>
+    </div>
+
+    <div class="card">
+      <h2>4. Conditions (if / else)</h2>
+      <input type="number" id="scoreField" placeholder="Score from 0 to 100">
+      <div class="row">
+        <button id="gradeBtn">Get Grade</button>
+      </div>
+      <p class="out" id="gradeOut"></p>
+    </div>
+
+    <div class="card">
+      <h2>5. Loops</h2>
+      <input type="number" id="tableField" placeholder="Number for multiplication table">
+      <div class="row">
+        <button id="tableBtn">Make Table</button>
+        <button id="sumBtn" class="gray">Sum 1 to 10</button>
+      </div>
+      <p class="out" id="loopOut"></p>
+    </div>
+
+    <div class="card">
+      <h2>6. localStorage</h2>
+      <input type="text" id="profileField" placeholder="Your favorite language">
+      <div class="row">
+        <button id="saveBtn">Save</button>
+        <button id="loadBtn" class="gray">Load</button>
+        <button id="clearBtn" class="red">Clear</button>
+      </div>
+      <p class="out" id="storageOut"></p>
+    </div>
+  </main>
+
+  <script>
+    const $ = (selector) => document.querySelector(selector);
+
+    const print = (selector, text, bad = false) => {
+      const el = $(selector);
+      el.textContent = text;
+      el.classList.toggle("bad", bad);
+    };
+
+    $("#showInfo").addEventListener("click", () => {
+      const fullName = "Asadbek";
+      const course = "Web Programming";
+      let year = 1;
+      const isActive = true;
+
+      console.log(fullName, course, year, isActive);
+
+      print("#infoOut",
+        `Name: ${fullName}\nCourse: ${course}\nYear: ${year}\nActive: ${isActive}`);
+    });
+
+    $("#toggleBox").addEventListener("click", () => {
+      $("#demoBox").classList.toggle("alt");
+    });
+
+    $("#editBox").addEventListener("click", () => {
+      const box = $("#demoBox");
+      box.textContent = box.classList.contains("alt")
+        ? "Dark style is active now."
+        : "Light style is active now.";
+    });
+
+    $("#greetBtn").addEventListener("click", () => {
+      const value = $("#nameField").value.trim();
+
+      if (!value) {
+        print("#greetOut", "Name field is empty.", true);
+        return;
+      }
+
+      const hour = new Date().getHours();
+      let part = "evening";
+      if (hour < 12) part = "morning";
+      else if (hour < 18) part = "afternoon";
+
+      print("#greetOut", `Good ${part}, ${value}!`);
+    });
+
+    $("#gradeBtn").addEventListener("click", () => {
+      const raw = $("#scoreField").value;
+      const score = Number(raw);
+
+      if (raw === "") {
+        print("#gradeOut", "Score field is empty.", true);
+      } else if (score < 0 || score > 100) {
+        print("#gradeOut", "Use a number from 0 to 100.", true);
+      } else if (score >= 90) {
+        print("#gradeOut", `${score} points: A`);
+      } else if (score >= 75) {
+        print("#gradeOut", `${score} points: B`);
+      } else if (score >= 60) {
+        print("#gradeOut", `${score} points: C`);
+      } else if (score >= 50) {
+        print("#gradeOut", `${score} points: D`);
+      } else {
+        print("#gradeOut", `${score} points: F`, true);
+      }
+    });
+
+    $("#tableBtn").addEventListener("click", () => {
+      const raw = $("#tableField").value;
+
+      if (raw === "") {
+        print("#loopOut", "Enter a number first.", true);
+        return;
+      }
+
+      const num = Number(raw);
+      const rows = [];
+
+      for (let i = 1; i <= 10; i++) {
+        rows.push(`${num} x ${i} = ${num * i}`);
+      }
+
+      print("#loopOut", rows.join("\n"));
+    });
+
+    $("#sumBtn").addEventListener("click", () => {
+      let total = 0;
+      let i = 1;
+
+      while (i <= 10) {
+        total += i;
+        i++;
+      }
+
+      print("#loopOut", `Sum of numbers 1 to 10 is ${total}`);
+    });
+
+    $("#saveBtn").addEventListener("click", () => {
+      const value = $("#profileField").value.trim();
+
+      if (!value) {
+        print("#storageOut", "Type something to save.", true);
+        return;
+      }
+
+      localStorage.setItem("favoriteLanguage", value);
+      print("#storageOut", `Saved: ${value}`);
+    });
+
+    $("#loadBtn").addEventListener("click", () => {
+      const value = localStorage.getItem("favoriteLanguage");
+
+      if (value === null) {
+        print("#storageOut", "Storage is empty.", true);
+      } else {
+        print("#storageOut", `Your favorite language is ${value}`);
+      }
+    });
+
+    $("#clearBtn").addEventListener("click", () => {
+      localStorage.removeItem("favoriteLanguage");
+      print("#storageOut", "Storage cleared.");
+    });
+  </script>
+
+</body>
+</html>

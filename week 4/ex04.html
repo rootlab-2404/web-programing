@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 4 Exercise 4</title>
+<style>
+  :root {
+    --accent: #16a34a;
+    --accent-dark: #15803d;
+    --accent-light: #dcfce7;
+    --accent-border: #bbf7d0;
+    --bg: #f0fdf4;
+    --text: #1f2937;
+    --muted: #6b7280;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 24px 16px;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .app {
+    max-width: 440px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(22, 163, 74, .12);
+  }
+  h2 { margin: 0 0 4px; color: var(--accent); font-size: 24px; }
+  #count { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
+
+  .search-wrap { position: relative; margin-bottom: 14px; }
+  #search {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    font-size: 16px;
+    border: 2px solid var(--accent-border);
+    border-radius: 12px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  #search:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-light);
+  }
+  #clear {
+    position: absolute; right: 10px; top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    width: 24px; height: 24px;
+    border: none; border-radius: 50%;
+    background: var(--accent-light); color: var(--accent-dark);
+    font-size: 14px; line-height: 1; cursor: pointer;
+  }
+  #clear:hover { background: var(--accent-border); }
+
+  .student {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; margin-bottom: 6px;
+    background: var(--bg);
+    border: 1px solid var(--accent-border);
+    border-radius: 10px;
+    animation: fadeIn .2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } }
+  .avatar {
+    flex: none;
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent); color: #fff;
+    font-weight: 700; font-size: 14px;
+  }
+  .info { min-width: 0; }
+  .name { font-weight: 600; font-size: 15px; }
+  .major { font-size: 13px; color: var(--muted); }
+
+  mark { background: #fde68a; color: inherit; border-radius: 3px; padding: 0 1px; }
+
+  #no-results { display: none; color: #9ca3af; text-align: center; padding: 20px; }
+</style>
+</head>
+<body>
+  <div class="app">
+    <h2>Student Search</h2>
+    <p id="count"></p>
+
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="Search by name or major..." autocomplete="off">
+      <button id="clear" aria-label="Clear search">✕</button>
+    </div>
+
+    <div id="student-list"></div>
+    <p id="no-results">No students found.</p>
+  </div>
+
+  <script>
+    const students = [
+      { name: "Kim Jisoo",    major: "Web Programming" },
+      { name: "Park Minjun",  major: "Computer Science" },
+      { name: "Lee Sooyeon",  major: "Software Engineering" },
+      { name: "Choi Hyunwoo", major: "Artificial Intelligence" },
+      { name: "Jung Yuna",    major: "Data Science" },
+      { name: "Kang Seojun",  major: "Web Programming" }
+    ];
+
+    const search = document.getElementById("search");
+    const clearBtn = document.getElementById("clear");
+    const listEl = document.getElementById("student-list");
+    const noResults = document.getElementById("no-results");
+    const countEl = document.getElementById("count");
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
+    }
+
+    function highlight(text, term) {
+      const safe = escapeHtml(text);
+      if (!term) return safe;
+      const idx = text.toLowerCase().indexOf(term);
+      if (idx === -1) return safe;
+      return escapeHtml(text.slice(0, idx)) +
+        "<mark>" + escapeHtml(text.slice(idx, idx + term.length)) + "</mark>" +
+        escapeHtml(text.slice(idx + term.length));
+    }
+
+    function initials(name) {
+      return name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+    }
+
+    function render() {
+      const term = search.value.trim().toLowerCase();
+      clearBtn.style.display = search.value ? "block" : "none";
+
+      const matches = students.filter(s =>
+        s.name.toLowerCase().includes(term) ||
+        s.major.toLowerCase().includes(term));
+
+      listEl.innerHTML = matches.map(s => `
+        <div class="student">
+          <div class="avatar">${initials(s.name)}</div>
+          <div class="info">
+            <div class="name">${highlight(s.name, term)}</div>
+            <div class="major">${highlight(s.major, term)}</div>
+          </div>
+        </div>
+      `).join("");
+
+      noResults.style.display = matches.length === 0 ? "block" : "none";
+      countEl.textContent = "Showing " + matches.length + " of " + students.length + " students";
+    }
+
+    search.addEventListener("input", render);
+
+    clearBtn.addEventListener("click", () => {
+      search.value = "";
+      search.focus();
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
