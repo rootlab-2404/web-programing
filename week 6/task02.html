@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Pick a writer, read their posts, and see what readers replied."
+    />
+    <title>Writers' Corner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,700;1,6..12,400&family=Young+Serif&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Layout: serif masthead, writers as a row of buttons, posts as a ruled numbered list. */
+      :root {
+        --paper: #ffffff;
+        --ink: #0b0b0f;
+        --mute: #4a4a55;
+        --rule: #0b0b0f;
+        --soft: #ececf2;
+        --blue: #1a35e8;
+        --err: #a3001b;
+        --f-head: "Young Serif", Georgia, "Times New Roman", serif;
+        --f-body: "Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font: 400 17px/1.65 var(--f-body);
+      }
+      .page {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 44px 20px 80px;
+      }
+      header h1 {
+        font: 400 clamp(2.8rem, 11vw, 5.6rem) / 1 var(--f-head);
+        letter-spacing: -0.01em;
+        margin: 0 0 16px;
+        text-wrap: balance;
+      }
+      header h1 span {
+        color: var(--blue);
+        font-style: italic;
+      }
+      .lede {
+        font-size: 1.1rem;
+        font-style: italic;
+        color: var(--mute);
+        margin: 0 0 30px;
+        max-width: 52ch;
+      }
+      .label {
+        font-weight: 700;
+        font-size: 0.8rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        margin: 0 0 10px;
+      }
+      #authors {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-bottom: 24px;
+        border-bottom: 4px solid var(--rule);
+      }
+      #authors button {
+        font: 700 0.95rem/1.2 var(--f-body);
+        min-height: 44px;
+        padding: 6px 16px;
+        background: var(--paper);
+        color: var(--ink);
+        border: 2px solid var(--ink);
+        border-radius: 22px;
+        cursor: pointer;
+      }
+      #authors button:hover {
+        background: var(--soft);
+      }
+      #authors button[aria-pressed="true"] {
+        background: var(--ink);
+        color: var(--paper);
+      }
+      button:focus-visible {
+        outline: 3px solid var(--blue);
+        outline-offset: 3px;
+      }
+      #who {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 18px;
+        padding: 18px 0;
+        border-bottom: 1px solid var(--rule);
+        font-size: 0.95rem;
+        color: var(--mute);
+        min-height: 4rem;
+      }
+      #who strong {
+        font: 400 1.5rem/1.2 var(--f-head);
+        color: var(--ink);
+      }
+      #status {
+        font-style: italic;
+        margin: 22px 0 0;
+        color: var(--mute);
+      }
+      #status.err {
+        color: var(--err);
+        font-style: normal;
+        font-weight: 700;
+      }
+      ol {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .post {
+        display: grid;
+        grid-template-columns: 5rem 1fr;
+        gap: 4px 14px;
+        padding: 30px 0;
+        border-bottom: 1px solid var(--rule);
+      }
+      .num {
+        font: 400 3rem/1 var(--f-head);
+        color: var(--blue);
+        font-variant-numeric: lining-nums tabular-nums;
+      }
+      .body {
+        min-width: 0;
+      }
+      .post h2 {
+        font: 400 1.6rem/1.25 var(--f-head);
+        margin: 0 0 10px;
+        overflow-wrap: anywhere;
+      }
+      .post h2::first-letter {
+        text-transform: uppercase;
+      }
+      .post p {
+        margin: 0 0 18px;
+        max-width: 60ch;
+        overflow-wrap: anywhere;
+      }
+      .tog {
+        font: 700 0.92rem/1.2 var(--f-body);
+        min-height: 44px;
+        padding: 8px 20px;
+        background: var(--blue);
+        color: #fff;
+        border: 2px solid var(--blue);
+        border-radius: 22px;
+        cursor: pointer;
+      }
+      .tog[aria-expanded="true"] {
+        background: var(--paper);
+        color: var(--blue);
+      }
+      .tog:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
+      .comments {
+        margin-top: 20px;
+        background: var(--soft);
+        padding: 6px 20px;
+        border-radius: 10px;
+      }
+      .c {
+        padding: 16px 0;
+        border-bottom: 1px solid #c9c9d4;
+        font-size: 0.97rem;
+        overflow-wrap: anywhere;
+      }
+      .c:last-child {
+        border-bottom: 0;
+      }
+      .c b {
+        display: block;
+        font-family: var(--f-head);
+        font-weight: 400;
+        font-size: 1.05rem;
+      }
+      .c b::first-letter {
+        text-transform: uppercase;
+      }
+      .c .mail {
+        display: block;
+        font-size: 0.82rem;
+        color: var(--mute);
+        margin-bottom: 4px;
+      }
+      @media (max-width: 560px) {
+        .post {
+          grid-template-columns: 1fr;
+        }
+        .num {
+          font-size: 2.3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <h1>Writers' <span>Corner</span></h1>
+        <p class="lede">
+          Pick a writer to read their latest posts, then open any post to see
+          what readers had to say.
+        </p>
+      </header>
+ 
+      <main>
+        <p class="label" id="authors-label">Writers</p>
+        <div id="authors" role="group" aria-labelledby="authors-label">
+          <span id="authors-loading">Gathering the writers…</span>
+        </div>
+        <div id="who"></div>
+        <p id="status" role="status" aria-live="polite"></p>
+        <ol id="posts" aria-label="Posts"></ol>
+      </main>
+    </div>
+ 
+    <script>
+      const API = "https://jsonplaceholder.typicode.com";
+      const $ = (id) => document.getElementById(id);
+      let users = [],
+        token = 0;
+ 
+      async function j(path) {
+        const r = await fetch(API + path);
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      }
+ 
+      function say(text, isErr) {
+        const s = $("status");
+        s.className = isErr ? "err" : "";
+        s.textContent = text;
+        s.hidden = !text;
+      }
+ 
+      function el(tag, cls, text) {
+        const n = document.createElement(tag);
+        if (cls) n.className = cls;
+        if (text != null) n.textContent = text;
+        return n;
+      }
+ 
+      async function init() {
+        try {
+          users = await j("/users");
+          const box = $("authors");
+          box.innerHTML = "";
+          users.forEach((u) => {
+            const b = el("button", "", u.name);
+            b.type = "button";
+            b.dataset.id = u.id;
+            b.setAttribute("aria-pressed", "false");
+            b.onclick = () => showPosts(u.id);
+            box.appendChild(b);
+          });
+          showPosts(users[0].id);
+        } catch (e) {
+          $("authors").textContent = "";
+          say(
+            "The writers could not be reached (" +
+              e.message +
+              "). Reload the page to try again.",
+            true,
+          );
+        }
+      }
+ 
+      function showWho(u) {
+        const w = $("who");
+        w.innerHTML = "";
+        w.append(
+          el("strong", "", u.name),
+          el("span", "", "writes as @" + u.username),
+          el("span", "", u.email),
+          el("span", "", "for " + u.company.name),
+        );
+      }
+ 
+      async function showPosts(id) {
+        const t = ++token;
+        const u = users.find((x) => x.id == id);
+        document.querySelectorAll("#authors button").forEach((b) => {
+          b.setAttribute("aria-pressed", String(b.dataset.id == id));
+        });
+        showWho(u);
+        $("posts").innerHTML = "";
+        say("Fetching " + u.name + "'s posts…");
+        try {
+          const posts = await j("/posts?userId=" + id);
+          if (t !== token) return;
+          say("");
+          posts.forEach((p) => $("posts").appendChild(renderPost(p)));
+        } catch (e) {
+          if (t !== token) return;
+          say(
+            "The posts did not load (" + e.message + "). Pick the writer again to retry.",
+            true,
+          );
+        }
+      }
+ 
+      function renderPost(p) {
+        const li = el("li", "post");
+        const num = el("div", "num", String(p.id).padStart(2, "0"));
+        num.setAttribute("aria-hidden", "true");
+        const body = el("div", "body");
+        const h = el("h2", "", p.title);
+        const para = el("p", "", p.body);
+        const btn = el("button", "tog", "Read the replies");
+        btn.type = "button";
+        btn.setAttribute("aria-expanded", "false");
+        const box = el("div", "comments");
+        box.id = "comments-" + p.id;
+        box.hidden = true;
+        btn.setAttribute("aria-controls", box.id);
+        let loaded = false;
+ 
+        btn.onclick = async () => {
+          if (loaded) {
+            box.hidden = !box.hidden;
+            btn.setAttribute("aria-expanded", String(!box.hidden));
+            btn.textContent = box.hidden ? "Read the replies" : "Close the replies";
+            return;
+          }
+          btn.disabled = true;
+          btn.textContent = "Fetching replies…";
+          try {
+            const cs = await j("/posts/" + p.id + "/comments");
+            cs.forEach((c) => {
+              const d = el("div", "c");
+              d.append(
+                el("b", "", c.name),
+                el("span", "mail", c.email),
+                el("div", "", c.body),
+              );
+              box.appendChild(d);
+            });
+            loaded = true;
+            box.hidden = false;
+            btn.setAttribute("aria-expanded", "true");
+            btn.textContent = "Close the replies";
+          } catch (e) {
+            btn.textContent = "Try the replies again";
+            say("The replies did not load (" + e.message + ").", true);
+          }
+          btn.disabled = false;
+          btn.focus();
+        };
+ 
+        body.append(h, para, btn, box);
+        li.append(num, body);
+        return li;
+      }
+ 
+      init();
+    </script>
+  </body>
+</html>

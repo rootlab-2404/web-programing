@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Current weather for Seoul, Busan, Incheon, Jeju, Singapore and Tokyo, from Open-Meteo."
+    />
+    <title>Seoul Weather</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=DM+Mono:wght@400;500&family=Public+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Layout: city switcher on top, a big reading beside stat tiles, then a to-scale thermometer bar. */
+      :root {
+        --paper: #eef1f4;
+        --card: #ffffff;
+        --ink: #0f1720;
+        --mute: #46525e;
+        --line: #cfd6dd;
+        --accent: #b45309;
+        --f-num: "Big Shoulders Display", Impact, "Arial Narrow", sans-serif;
+        --f-mono: "DM Mono", ui-monospace, Menlo, Consolas, monospace;
+        --f-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--paper);
+        color: var(--ink);
+        font: 400 16px/1.5 var(--f-body);
+      }
+      .app {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 32px 20px 64px;
+      }
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 4px 20px;
+        margin-bottom: 22px;
+      }
+      header h1 {
+        font: 500 0.95rem/1.2 var(--f-mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin: 0;
+      }
+      header p {
+        font-size: 0.88rem;
+        color: var(--mute);
+        margin: 0;
+      }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      button {
+        font: 600 0.95rem/1 var(--f-body);
+        min-height: 44px;
+        padding: 10px 18px;
+        color: var(--ink);
+        background: var(--card);
+        border: 2px solid var(--ink);
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #e3e8ed;
+      }
+      button[aria-pressed="true"] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      button.refresh {
+        margin-left: auto;
+        border-style: dashed;
+      }
+      button:focus-visible {
+        outline: 3px solid var(--ink);
+        outline-offset: 3px;
+      }
+      #view {
+        margin-top: 22px;
+      }
+      .msg {
+        font-family: var(--f-mono);
+        font-size: 0.95rem;
+        color: var(--mute);
+        margin: 0;
+      }
+      .msg.err {
+        color: #a3001b;
+        font-weight: 500;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 16px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 24px 26px;
+        min-width: 0;
+      }
+      .city {
+        font: 500 0.9rem/1.2 var(--f-mono);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--mute);
+        margin: 0 0 6px;
+      }
+      .temp {
+        font-family: var(--f-num);
+        font-weight: 800;
+        font-size: clamp(6rem, 22vw, 10.5rem);
+        line-height: 0.85;
+        letter-spacing: -0.01em;
+        color: var(--accent);
+        margin: 0 0 14px;
+        font-variant-numeric: tabular-nums;
+      }
+      .cond {
+        font-size: 1.6rem;
+        font-weight: 600;
+        line-height: 1.2;
+        margin: 0 0 8px;
+      }
+      .obs {
+        font: 400 0.82rem/1.3 var(--f-mono);
+        color: var(--mute);
+        margin: 0;
+      }
+      .tiles {
+        display: grid;
+        gap: 16px;
+        grid-template-rows: repeat(3, 1fr);
+      }
+      .tile {
+        padding: 16px 22px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .tile dt {
+        font: 500 0.78rem/1.2 var(--f-mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--mute);
+      }
+      .tile dd {
+        margin: 2px 0 0;
+        font-family: var(--f-num);
+        font-weight: 700;
+        font-size: 2.4rem;
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+      }
+      .tile dd small {
+        font: 400 0.95rem var(--f-body);
+        color: var(--mute);
+        margin-left: 4px;
+      }
+      dl.tiles {
+        margin: 0;
+      }
+      .scale {
+        grid-column: 1 / -1;
+      }
+      .scale h3 {
+        font: 500 0.78rem/1.2 var(--f-mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--mute);
+        margin: 0 0 18px;
+      }
+      .track-wrap {
+        position: relative;
+        margin: 0 18px;
+        padding-top: 10px;
+      }
+      .track {
+        height: 14px;
+        border-radius: 7px;
+        background: linear-gradient(
+          90deg,
+          #3b82f6 0%,
+          #22b8cf 25%,
+          #5fc060 45%,
+          #f2c230 65%,
+          #ef6a2f 82%,
+          #d62828 100%
+        );
+      }
+      .mark {
+        position: absolute;
+        top: 0;
+        width: 6px;
+        height: 34px;
+        margin-left: -3px;
+        background: var(--ink);
+        border: 2px solid #fff;
+        border-radius: 3px;
+        box-shadow: 0 0 0 1px var(--ink);
+      }
+      .mark.feels {
+        top: 6px;
+        width: 14px;
+        height: 22px;
+        margin-left: -7px;
+        background: #fff;
+        border: 3px solid var(--ink);
+        border-radius: 50%;
+        box-shadow: none;
+      }
+      .ticks {
+        position: relative;
+        height: 22px;
+        margin-top: 12px;
+      }
+      .ticks span {
+        position: absolute;
+        transform: translateX(-50%);
+        font: 400 0.8rem/1 var(--f-mono);
+        color: var(--mute);
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 22px;
+        margin: 14px 0 0;
+        font-size: 0.85rem;
+        color: var(--mute);
+      }
+      @media (max-width: 640px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .tiles {
+          grid-template-rows: none;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .tile {
+          padding: 14px;
+        }
+        .tile dd {
+          font-size: 1.9rem;
+        }
+        button.refresh {
+          margin-left: 0;
+        }
+      }
+      @media (max-width: 420px) {
+        .tiles {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <h1>Weather Now</h1>
+        <p>Live data from Open-Meteo, no API key needed.</p>
+      </header>
+ 
+      <nav id="nav" aria-label="City"></nav>
+ 
+      <section id="view" aria-live="polite" aria-busy="true">
+        <p class="msg">Loading…</p>
+      </section>
+    </div>
+ 
+    <script>
+      const CITIES = {
+        Seoul: [37.5665, 126.978],
+        Busan: [35.1796, 129.0756],
+        Incheon: [37.4563, 126.7052],
+        Jeju: [33.4996, 126.5312],
+        Singapore: [1.3521, 103.8198],
+        Tokyo: [35.6762, 139.6503],
+      };
+      const CODES = [
+        [[0], "Clear sky", "clear"],
+        [[1], "Mainly clear", "clear"],
+        [[2], "Partly cloudy", "cloud"],
+        [[3], "Overcast", "cloud"],
+        [[45, 48], "Fog", "cloud"],
+        [[51, 53, 55, 56, 57], "Drizzle", "rain"],
+        [[61, 63, 65, 66, 67, 80, 81, 82], "Rain", "rain"],
+        [[71, 73, 75, 77, 85, 86], "Snow", "snow"],
+        [[95, 96, 99], "Thunderstorm", "storm"],
+      ];
+      const ACCENT = {
+        clear: "#b45309",
+        night: "#3730a3",
+        cloud: "#475569",
+        rain: "#0f5f9e",
+        snow: "#0e7490",
+        storm: "#6d28d9",
+      };
+      const MIN = -10,
+        MAX = 40;
+      const $ = (id) => document.getElementById(id);
+      let city = "Seoul",
+        token = 0;
+ 
+      const pct = (v) =>
+        Math.min(100, Math.max(0, ((v - MIN) / (MAX - MIN)) * 100));
+ 
+      Object.keys(CITIES).forEach((n) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.textContent = n;
+        b.dataset.city = n;
+        b.setAttribute("aria-pressed", "false");
+        b.onclick = () => {
+          city = n;
+          load();
+        };
+        $("nav").appendChild(b);
+      });
+      const rf = document.createElement("button");
+      rf.type = "button";
+      rf.textContent = "Refresh";
+      rf.className = "refresh";
+      rf.onclick = () => load();
+      $("nav").appendChild(rf);
+ 
+      function scaleHtml(temp, feels) {
+        let ticks = "";
+        for (let v = MIN; v <= MAX; v += 10) {
+          ticks += `<span style="left:${pct(v)}%">${v}°</span>`;
+        }
+        return `<section class="card scale" aria-labelledby="sc-h">
+          <h3 id="sc-h">Temperature on a −10 to 40 °C scale</h3>
+          <div class="track-wrap" role="img" aria-label="Air temperature ${temp} degrees Celsius, feels like ${feels}, on a scale from minus 10 to 40">
+            <div class="track"></div>
+            <div class="mark" style="left:${pct(temp)}%"></div>
+            <div class="mark feels" style="left:${pct(feels)}%"></div>
+            <div class="ticks" aria-hidden="true">${ticks}</div>
+          </div>
+          <p class="legend" aria-hidden="true"><span>▮ Air temperature</span><span>◯ Feels like</span></p>
+        </section>`;
+      }
+ 
+      async function load() {
+        const t = ++token;
+        document
+          .querySelectorAll("nav button[data-city]")
+          .forEach((b) =>
+            b.setAttribute("aria-pressed", String(b.dataset.city === city)),
+          );
+        $("view").setAttribute("aria-busy", "true");
+        $("view").innerHTML = `<p class="msg">Loading ${city}…</p>`;
+        const [lat, lon] = CITIES[city];
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&timezone=auto&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day`;
+        try {
+          const r = await fetch(url);
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          const c = (await r.json()).current;
+          if (t !== token) return;
+          const hit = CODES.find((x) => x[0].includes(c.weather_code)) || [
+            [],
+            "Unknown",
+            "cloud",
+          ];
+          const theme = !c.is_day && hit[2] === "clear" ? "night" : hit[2];
+          document.body.style.setProperty("--accent", ACCENT[theme]);
+          const temp = Math.round(c.temperature_2m);
+          const feels = Math.round(c.apparent_temperature);
+          const obs = String(c.time || "").slice(11, 16);
+          $("view").innerHTML = `<div class="grid">
+            <section class="card" aria-label="${city} now">
+              <h2 class="city">${city}</h2>
+              <p class="temp">${temp}°</p>
+              <p class="cond">${hit[1]}${c.is_day ? "" : ", night"}</p>
+              ${obs ? `<p class="obs">Observed ${obs} local time</p>` : ""}
+            </section>
+            <dl class="tiles">
+              <div class="card tile"><dt>Feels like</dt><dd>${feels}<small>°C</small></dd></div>
+              <div class="card tile"><dt>Humidity</dt><dd>${c.relative_humidity_2m}<small>%</small></dd></div>
+              <div class="card tile"><dt>Wind</dt><dd>${c.wind_speed_10m}<small>km/h</small></dd></div>
+            </dl>
+            ${scaleHtml(temp, feels)}
+          </div>`;
+        } catch (e) {
+          if (t !== token) return;
+          $("view").innerHTML = "";
+          const p = document.createElement("p");
+          p.className = "msg err";
+          p.textContent =
+            "Could not load weather for " +
+            city +
+            " (" +
+            e.message +
+            "). Try Refresh.";
+          $("view").appendChild(p);
+        }
+        if (t === token) $("view").setAttribute("aria-busy", "false");
+      }
+      load();
+    </script>
+  </body>
+</html>

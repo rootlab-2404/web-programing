@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Search the full Pokémon database at pokeapi.co by name or number and read its stat card."
+    />
+    <title>Pokémon Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Layout: search bar on top, one white stat sheet below: artwork and facts side by side, six upright bars underneath. */
+      :root {
+        --paper: #f3eeff;
+        --card: #ffffff;
+        --ink: #1c1b33;
+        --mute: #52506e;
+        --line: #d3d0ea;
+        --accent: #4f35e0;
+        --type: #4f35e0;
+        --f-head: "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+        --f-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --f-mono: "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 10% 6%, color-mix(in srgb, var(--type) 40%, #fff) 0, transparent 42%),
+          radial-gradient(circle at 92% 18%, #ffd9ec 0, transparent 40%),
+          radial-gradient(circle at 82% 96%, #cdeffd 0, transparent 46%),
+          radial-gradient(rgba(79, 53, 224, 0.14) 2px, transparent 2.5px) 0 0 / 26px 26px,
+          var(--paper);
+        color: var(--ink);
+        font: 400 17px/1.5 var(--f-body);
+        padding: 36px 16px 64px;
+      }
+      .app {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      h1 {
+        font: 600 clamp(2.4rem, 9vw, 4rem) / 1 var(--f-head);
+        letter-spacing: -0.02em;
+        margin: 0 0 10px;
+      }
+      .lede {
+        margin: 0 0 22px;
+        color: var(--mute);
+        max-width: 50ch;
+      }
+      form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: end;
+        background: var(--card);
+        border: 3px solid #fff;
+        border-radius: 30px;
+        padding: 16px 18px;
+        box-shadow: 0 10px 26px rgba(79, 53, 224, 0.14);
+      }
+      .field {
+        flex: 1 1 220px;
+        display: grid;
+        gap: 4px;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+      input {
+        font: 400 1.05rem var(--f-body);
+        min-height: 48px;
+        padding: 8px 14px;
+        color: var(--ink);
+        background: #f7f6fd;
+        border: 2px solid var(--line);
+        border-radius: 999px;
+        padding-inline: 18px;
+      }
+      input::placeholder {
+        color: #6b6989;
+      }
+      button {
+        font: 600 1rem/1.2 var(--f-body);
+        min-height: 48px;
+        padding: 10px 22px;
+        border-radius: 999px;
+        border: 2px solid var(--accent);
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+      }
+      button.alt {
+        background: var(--card);
+        color: var(--accent);
+      }
+      button:hover:not(:disabled) {
+        filter: brightness(0.92);
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
+      input:focus-visible,
+      button:focus-visible {
+        outline: 3px solid var(--ink);
+        outline-offset: 3px;
+      }
+      #out {
+        margin-top: 22px;
+      }
+      .msg {
+        margin: 0;
+        padding: 6px 4px;
+        color: var(--mute);
+      }
+      .msg.err {
+        color: #9b0f2e;
+        font-weight: 600;
+      }
+      .sheet {
+        background: var(--card);
+        border: 4px solid #fff;
+        border-radius: 36px;
+        padding: 26px;
+        box-shadow: 0 20px 44px color-mix(in srgb, var(--type) 38%, transparent);
+      }
+      .top {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 26px;
+        align-items: center;
+      }
+      .art {
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: var(--type);
+        box-shadow:
+          0 0 0 8px color-mix(in srgb, var(--type) 28%, #fff),
+          0 0 0 12px #fff;
+        display: grid;
+        place-items: center;
+      }
+      .art img {
+        width: 86%;
+        height: 86%;
+        object-fit: contain;
+        filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.28));
+      }
+      .no {
+        font: 500 0.95rem/1 var(--f-mono);
+        color: var(--mute);
+        margin: 0 0 6px;
+      }
+      .name {
+        font: 600 clamp(2rem, 7vw, 2.9rem) / 1 var(--f-head);
+        letter-spacing: -0.02em;
+        text-transform: capitalize;
+        margin: 0 0 12px;
+        overflow-wrap: anywhere;
+      }
+      .types {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 16px;
+        padding: 0;
+        list-style: none;
+      }
+      .types li {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 3px 14px 3px 8px;
+        border: 2px solid var(--ink);
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: capitalize;
+      }
+      .types i {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid var(--ink);
+      }
+      dl.facts {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 4px 18px;
+        margin: 0;
+      }
+      .facts dt {
+        color: var(--mute);
+        font-size: 0.9rem;
+      }
+      .facts dd {
+        margin: 0;
+        font-weight: 600;
+        text-transform: capitalize;
+        overflow-wrap: anywhere;
+      }
+      .stats h3 {
+        font: 500 0.8rem/1 var(--f-mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--mute);
+        margin: 28px 0 14px;
+        padding-top: 22px;
+        border-top: 1px solid var(--line);
+      }
+      .stats ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .stats li {
+        display: grid;
+        gap: 6px;
+        justify-items: center;
+        text-align: center;
+      }
+      .val {
+        font: 500 1.05rem/1 var(--f-mono);
+        font-variant-numeric: tabular-nums;
+      }
+      .col {
+        width: 100%;
+        max-width: 56px;
+        height: 130px;
+        background: #efedfb;
+        border-radius: 999px;
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+      }
+      .col i {
+        display: block;
+        width: 100%;
+        background: var(--type);
+        border-radius: 999px;
+      }
+      .nm {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--mute);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+      .scale-note {
+        margin: 12px 0 0;
+        font-size: 0.82rem;
+        color: var(--mute);
+      }
+      h1 {
+        text-shadow: 3px 3px 0 color-mix(in srgb, var(--type) 40%, #fff);
+      }
+      .art img {
+        animation: pop 0.55s cubic-bezier(0.3, 1.5, 0.5, 1);
+      }
+      @keyframes pop {
+        from {
+          transform: scale(0.8) rotate(-6deg);
+          opacity: 0;
+        }
+        to {
+          transform: none;
+          opacity: 1;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .art img {
+          animation: none;
+        }
+      }
+      @media (max-width: 600px) {
+        .top {
+          grid-template-columns: 1fr;
+          justify-items: center;
+          text-align: center;
+        }
+        .types {
+          justify-content: center;
+        }
+        dl.facts {
+          text-align: left;
+        }
+        .sheet {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <h1>Pokémon Finder</h1>
+      <p class="lede">
+        Search the full Pokémon database at pokeapi.co by name or number and get its stat card.
+      </p>
+ 
+      <form id="f">
+        <label class="field" for="q"
+          >Pokémon name or number
+          <input
+            id="q"
+            type="text"
+            placeholder="pikachu or 25"
+            autocomplete="off"
+          />
+        </label>
+        <button id="go" type="submit">Find Pokémon</button>
+        <button id="rnd" type="button" class="alt">Random Pokémon</button>
+      </form>
+ 
+      <section id="out" role="status" aria-live="polite" aria-busy="false">
+        <p class="msg">Type a Pokémon name or number to see its stat card.</p>
+      </section>
+    </div>
+ 
+    <script>
+      const COL = {
+        normal: "#8a8a6a",
+        fire: "#e8622a",
+        water: "#4a7fe0",
+        electric: "#e0b414",
+        grass: "#4fa83d",
+        ice: "#5cc0c0",
+        fighting: "#b22d26",
+        poison: "#9a3f9a",
+        ground: "#c2a04a",
+        flying: "#7c8ee6",
+        psychic: "#e5457a",
+        bug: "#8fa512",
+        rock: "#9a8528",
+        ghost: "#5c4a8a",
+        dragon: "#5a2ff0",
+        dark: "#5a463a",
+        steel: "#8a8aa8",
+        fairy: "#d67a96",
+      };
+      const STAT = {
+        hp: ["HP", "HP"],
+        attack: ["ATK", "Attack"],
+        defense: ["DEF", "Defense"],
+        "special-attack": ["SP.A", "Special attack"],
+        "special-defense": ["SP.D", "Special defense"],
+        speed: ["SPD", "Speed"],
+      };
+      const MAXSTAT = 180;
+      const $ = (id) => document.getElementById(id);
+      let token = 0;
+ 
+      function el(tag, cls, text) {
+        const n = document.createElement(tag);
+        if (cls) n.className = cls;
+        if (text != null) n.textContent = text;
+        return n;
+      }
+ 
+      function msg(text, isErr) {
+        const out = $("out");
+        out.innerHTML = "";
+        out.appendChild(el("p", "msg" + (isErr ? " err" : ""), text));
+      }
+ 
+      async function lookup(term) {
+        term = String(term).trim().toLowerCase();
+        if (!term) {
+          msg("Enter a Pokémon name or number first.", true);
+          return;
+        }
+        const t = ++token;
+        $("out").setAttribute("aria-busy", "true");
+        $("go").disabled = $("rnd").disabled = true;
+        msg("Searching the database…");
+        try {
+          const r = await fetch(
+            "https://pokeapi.co/api/v2/pokemon/" + encodeURIComponent(term),
+          );
+          if (t !== token) return;
+          if (r.status === 404) {
+            msg(
+              'No Pokémon found for "' +
+                term +
+                '". Check the spelling or try a number.',
+              true,
+            );
+          } else {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            const p = await r.json();
+            if (t !== token) return;
+            show(p);
+          }
+        } catch (e) {
+          if (t !== token) return;
+          msg("Could not reach the Pokémon database (" + e.message + "). Try again in a moment.", true);
+        }
+        if (t === token) {
+          $("out").setAttribute("aria-busy", "false");
+          $("go").disabled = $("rnd").disabled = false;
+        }
+      }
+ 
+      function show(p) {
+        const col = COL[p.types[0].type.name] || "#4f35e0";
+        document.body.style.setProperty("--type", col);
+        const src =
+          (p.sprites.other &&
+            p.sprites.other["official-artwork"] &&
+            p.sprites.other["official-artwork"].front_default) ||
+          p.sprites.front_default ||
+          "";
+ 
+        const sheet = el("article", "sheet");
+        sheet.setAttribute("aria-label", p.name + " stat card");
+ 
+        const top = el("div", "top");
+        const art = el("div", "art");
+        if (src) {
+          const img = document.createElement("img");
+          img.src = src;
+          img.alt = "Official artwork of " + p.name;
+          art.appendChild(img);
+        }
+        const info = el("div", "info");
+        info.append(
+          el("p", "no", "No. " + String(p.id).padStart(4, "0")),
+          el("h2", "name", p.name),
+        );
+        const types = el("ul", "types");
+        types.setAttribute("aria-label", "Types");
+        p.types.forEach((x) => {
+          const li = el("li");
+          const dot = el("i");
+          dot.style.background = COL[x.type.name] || "#4f35e0";
+          dot.setAttribute("aria-hidden", "true");
+          li.append(dot, document.createTextNode(x.type.name));
+          types.appendChild(li);
+        });
+        const facts = el("dl", "facts");
+        const rows = [
+          ["Height", p.height / 10 + " m"],
+          ["Weight", p.weight / 10 + " kg"],
+          [
+            "Abilities",
+            p.abilities.map((a) => a.ability.name.replace(/-/g, " ")).join(", "),
+          ],
+        ];
+        rows.forEach(([k, v]) => facts.append(el("dt", "", k), el("dd", "", v)));
+        info.append(types, facts);
+        top.append(art, info);
+ 
+        const stats = el("section", "stats");
+        stats.setAttribute("aria-labelledby", "st-h");
+        const h3 = el("h3", "", "Base stats");
+        h3.id = "st-h";
+        const ul = el("ul");
+        p.stats.forEach((s) => {
+          const [short, full] = STAT[s.stat.name] || [s.stat.name, s.stat.name];
+          const li = el("li");
+          const val = el("span", "val", String(s.base_stat));
+          const colEl = el("div", "col");
+          colEl.setAttribute("aria-hidden", "true");
+          const bar = el("i");
+          bar.style.height = Math.min(100, (s.base_stat / MAXSTAT) * 100) + "%";
+          colEl.appendChild(bar);
+          const nm = el("span", "nm", short);
+          nm.setAttribute("aria-hidden", "true");
+          const sr = el("span", "sr", full);
+          li.append(val, colEl, nm, sr);
+          ul.appendChild(li);
+        });
+        stats.append(
+          h3,
+          ul,
+          el("p", "scale-note", "Bars show each stat out of " + MAXSTAT + "."),
+        );
+ 
+        sheet.append(top, stats);
+        $("out").innerHTML = "";
+        $("out").appendChild(sheet);
+      }
+ 
+      $("f").onsubmit = (e) => {
+        e.preventDefault();
+        lookup($("q").value);
+      };
+      $("rnd").onclick = () => {
+        const n = 1 + Math.floor(Math.random() * 1025);
+        $("q").value = n;
+        lookup(n);
+      };
+    </script>
+  </body>
+</html>

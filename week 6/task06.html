@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Sortable table of world countries with flags, capitals, regions, population and area."
+    />
+    <title>Country Atlas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gloock&family=Hanken+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Layout: sea-tinted page, a search row with region chips, then one white table sheet with a dark sticky header. */
+      :root {
+        --sea: #0e1a2b;
+        --on-bg: #f2f6fa;
+        --on-bg-mute: #b9c7d6;
+        --ink: #0c2f3a;
+        --mute: #44606a;
+        --line: #d4e5e3;
+        --coral: #c2371c;
+        --sun: #ffd166;
+        --white: #ffffff;
+        --f-head: "Gloock", Georgia, "Times New Roman", serif;
+        --f-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--on-bg);
+        font: 400 16px/1.5 var(--f-body);
+        padding: 36px clamp(14px, 4vw, 48px) 56px;
+        background: linear-gradient(180deg, #0e1a2b 0%, #15283f 100%) var(--sea);
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      h1 {
+        font: 400 clamp(2.6rem, 9vw, 4.4rem) / 1 var(--f-head);
+        margin: 0 0 10px;
+      }
+      .sub {
+        color: var(--on-bg-mute);
+        max-width: 66ch;
+        margin: 0 0 22px;
+      }
+      form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: end;
+        margin-bottom: 14px;
+      }
+      label {
+        display: grid;
+        gap: 4px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      input {
+        font: inherit;
+        min-height: 46px;
+        min-width: min(100%, 280px);
+        padding: 8px 18px;
+        color: var(--ink);
+        background: var(--white);
+        border: 2px solid var(--ink);
+        border-radius: 999px;
+      }
+      input::placeholder {
+        color: #5d7780;
+      }
+      button {
+        font: inherit;
+        color: var(--ink);
+      }
+      .go {
+        font-weight: 700;
+        min-height: 46px;
+        padding: 8px 24px;
+        background: var(--coral);
+        color: #fff;
+        border: 2px solid var(--coral);
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .go:hover {
+        background: #9f2b14;
+        border-color: #9f2b14;
+      }
+      .chips-label {
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin: 0 0 6px;
+      }
+      #regions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 18px;
+      }
+      #regions button {
+        font-weight: 700;
+        font-size: 0.92rem;
+        min-height: 44px;
+        padding: 6px 16px;
+        background: var(--white);
+        border: 2px solid var(--white);
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      #regions button:hover {
+        background: #def3ef;
+      }
+      #regions button[aria-pressed="true"] {
+        background: var(--sun);
+        border-color: var(--sun);
+        color: var(--ink);
+      }
+      input:focus-visible,
+      button:focus-visible,
+      .scroll:focus-visible {
+        outline: 3px solid var(--sun);
+        outline-offset: 3px;
+      }
+      #count {
+        margin: 0 0 10px;
+        font-weight: 500;
+        color: var(--on-bg-mute);
+        min-height: 1.5em;
+      }
+      .scroll {
+        overflow: auto;
+        max-height: 70vh;
+        color: var(--ink);
+        background: var(--white);
+        border: 1px solid #2f4766;
+        border-radius: 10px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        min-width: 760px;
+      }
+      th,
+      td {
+        padding: 10px 16px;
+        text-align: left;
+        white-space: nowrap;
+        border-bottom: 1px solid var(--line);
+      }
+      thead th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: #15283f;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.88rem;
+        letter-spacing: 0.04em;
+        border-bottom: 0;
+      }
+      thead th button {
+        all: unset;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: inherit;
+        font: inherit;
+        letter-spacing: inherit;
+      }
+      thead th button:focus-visible {
+        outline: 3px solid var(--sun);
+        outline-offset: 3px;
+      }
+      .ar {
+        color: var(--sun);
+        min-width: 1em;
+      }
+      tbody tr:nth-child(even) {
+        background: #f4fbfa;
+      }
+      tbody tr:hover {
+        background: #e3f5f2;
+      }
+      .n {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      th.n button {
+        justify-content: flex-end;
+      }
+      td.cn {
+        font-weight: 700;
+      }
+      td img {
+        display: block;
+        width: 36px;
+        height: 26px;
+        object-fit: cover;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+      }
+      .empty {
+        padding: 28px;
+        color: var(--mute);
+        white-space: normal;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Country Atlas</h1>
+      <p class="sub">
+        Countries come from the world-countries dataset (via jsDelivr), flags
+        from flagcdn.com and population from the World Bank. Press a column name
+        to sort by it.
+      </p>
+ 
+      <form id="f">
+        <label for="name"
+          >Find a place
+          <input
+            id="name"
+            type="search"
+            placeholder="Country or capital"
+            autocomplete="off"
+          />
+        </label>
+        <button class="go" type="submit">Find</button>
+      </form>
+ 
+      <p class="chips-label" id="regions-label">Region</p>
+      <div id="regions" role="group" aria-labelledby="regions-label"></div>
+ 
+      <p id="count" role="status" aria-live="polite">Loading countries…</p>
+      <div class="scroll" tabindex="0" role="region" aria-label="Countries table">
+        <table>
+          <thead>
+            <tr id="head"></tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+ 
+    <script>
+      const COLS = [
+        ["flag", "Flag", 0],
+        ["name", "Country", 0],
+        ["capital", "Capital", 0],
+        ["region", "Region", 0],
+        ["pop", "Population", 1],
+        ["area", "Area (km²)", 1],
+      ];
+      const COUNTRY_URLS = [
+        "https://cdn.jsdelivr.net/npm/world-countries/countries.json",
+        "https://cdn.jsdelivr.net/gh/mledoze/countries@master/countries.json",
+        "https://raw.githubusercontent.com/mledoze/countries/master/countries.json",
+      ];
+      const POP_URLS = [
+        "https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?format=json&per_page=400&mrnev=1",
+        "https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL?format=json&per_page=400&date=2022",
+      ];
+      const $ = (id) => document.getElementById(id);
+      let all = [],
+        view = [],
+        region = "",
+        sort = { key: "name", dir: 1 },
+        popError = "";
+ 
+      function el(tag, cls, text) {
+        const n = document.createElement(tag);
+        if (cls) n.className = cls;
+        if (text != null) n.textContent = text;
+        return n;
+      }
+ 
+      COLS.forEach(([k, label, num]) => {
+        const th = el("th", num ? "n" : "");
+        th.scope = "col";
+        if (k === "flag") {
+          th.textContent = label;
+        } else {
+          const b = el("button");
+          b.type = "button";
+          const ar = el("span", "ar");
+          ar.setAttribute("aria-hidden", "true");
+          b.append(document.createTextNode(label), ar);
+          b.onclick = () => {
+            sort = { key: k, dir: sort.key === k ? -sort.dir : 1 };
+            draw();
+          };
+          th.appendChild(b);
+          th.dataset.k = k;
+        }
+        $("head").appendChild(th);
+      });
+ 
+      async function firstJson(urls) {
+        let last;
+        for (const u of urls) {
+          try {
+            const r = await fetch(u);
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return await r.json();
+          } catch (e) {
+            last = e;
+          }
+        }
+        throw last || new Error("no source worked");
+      }
+ 
+      function buildRegions() {
+        const box = $("regions");
+        box.innerHTML = "";
+        ["", ...[...new Set(all.map((c) => c.region))].sort()].forEach((r) => {
+          const b = el("button", "", r || "All regions");
+          b.type = "button";
+          b.dataset.r = r;
+          b.setAttribute("aria-pressed", String(r === region));
+          b.onclick = () => {
+            region = r;
+            box.querySelectorAll("button").forEach((x) =>
+              x.setAttribute("aria-pressed", String(x.dataset.r === region)),
+            );
+            filter();
+          };
+          box.appendChild(b);
+        });
+      }
+ 
+      async function load() {
+        let countries;
+        try {
+          countries = await firstJson(COUNTRY_URLS);
+        } catch (e) {
+          $("count").textContent =
+            "The country list did not load (" +
+            e.message +
+            "). Check your internet connection and reload the page.";
+          return;
+        }
+ 
+        const pick = (c, keys) => {
+          for (const k of keys)
+            if (typeof c[k] === "string" && c[k]) return c[k];
+          return "";
+        };
+        all = countries
+          .map((c) => {
+            const name =
+              typeof c.name === "string"
+                ? c.name
+                : (c.name && (c.name.common || c.name.official)) || "";
+            return {
+              a2: pick(c, ["cca2", "alpha2", "iso2", "iso3166-1-alpha-2", "alpha-2"]).toUpperCase(),
+              a3: pick(c, ["cca3", "alpha3", "iso3", "iso3166-1-alpha-3", "alpha-3"]).toUpperCase(),
+              name,
+              official: (c.name && c.name.official) || "",
+              capital:
+                (Array.isArray(c.capital) ? c.capital[0] : c.capital) || "—",
+              region: c.region || "Other",
+              pop: null,
+              area: typeof c.area === "number" ? c.area : null,
+            };
+          })
+          .filter((c) => c.name);
+        buildRegions();
+        filter(); // the table is usable right away
+ 
+        try {
+          // population arrives later and never blocks the table
+          const data = await firstJson(POP_URLS);
+          const by3 = {},
+            by2 = {};
+          (data[1] || []).forEach((x) => {
+            if (!x.value) return;
+            if (x.countryiso3code) by3[x.countryiso3code] = x.value;
+            if (x.country && x.country.id) by2[x.country.id] = x.value;
+          });
+          all.forEach((c) => {
+            c.pop = by3[c.a3] ?? by2[c.a2] ?? null;
+          });
+          draw();
+        } catch (e) {
+          popError = e.message;
+          draw();
+        }
+      }
+ 
+      function flagFail(img) {
+        const cc = img.dataset.cc,
+          t = +img.dataset.try;
+        const next = [
+          "https://flagsapi.com/" + cc + "/flat/32.png",
+          "https://flagcdn.com/48x36/" + cc.toLowerCase() + ".png",
+        ];
+        if (t < next.length) {
+          img.dataset.try = t + 1;
+          img.src = next[t];
+        } else {
+          img.replaceWith(el("span", "", cc));
+        }
+      }
+ 
+      function flagCell(c) {
+        const td = el("td");
+        if (!c.a2) {
+          td.textContent = "—";
+          return td;
+        }
+        const img = document.createElement("img");
+        img.loading = "lazy";
+        img.width = 36;
+        img.height = 26;
+        img.alt = "Flag of " + c.name;
+        img.dataset.cc = c.a2;
+        img.dataset.try = "0";
+        img.addEventListener("error", () => flagFail(img));
+        img.src = "https://flagcdn.com/w40/" + c.a2.toLowerCase() + ".png";
+        td.appendChild(img);
+        return td;
+      }
+ 
+      function filter() {
+        const q = $("name").value.trim().toLowerCase();
+        view = all.filter(
+          (c) =>
+            (!region || c.region === region) &&
+            (!q ||
+              c.name.toLowerCase().includes(q) ||
+              c.official.toLowerCase().includes(q) ||
+              c.capital.toLowerCase().includes(q)),
+        );
+        draw();
+      }
+ 
+      function draw() {
+        const { key, dir } = sort;
+        view.sort((a, b) => {
+          const x = a[key],
+            y = b[key];
+          if (x == null) return 1;
+          if (y == null) return -1;
+          return (
+            (typeof x === "number" ? x - y : String(x).localeCompare(String(y))) *
+            dir
+          );
+        });
+        document.querySelectorAll("th[data-k]").forEach((th) => {
+          const on = th.dataset.k === key;
+          th.querySelector(".ar").textContent = on ? (dir > 0 ? "▲" : "▼") : "";
+          th.setAttribute(
+            "aria-sort",
+            on ? (dir > 0 ? "ascending" : "descending") : "none",
+          );
+        });
+        $("count").textContent =
+          "Showing " +
+          view.length +
+          " of " +
+          all.length +
+          " countries." +
+          (popError
+            ? " Population figures are unavailable right now (" + popError + ")."
+            : "");
+ 
+        const f = (n) => (n == null ? "—" : Math.round(n).toLocaleString());
+        const body = $("rows");
+        body.innerHTML = "";
+        if (!view.length) {
+          const tr = el("tr");
+          const td = el(
+            "td",
+            "empty",
+            "No countries match. Try a shorter name or pick another region.",
+          );
+          td.colSpan = 6;
+          tr.appendChild(td);
+          body.appendChild(tr);
+          return;
+        }
+        view.forEach((c) => {
+          const tr = el("tr");
+          tr.append(
+            flagCell(c),
+            el("td", "cn", c.name),
+            el("td", "", c.capital),
+            el("td", "", c.region),
+            el("td", "n", f(c.pop)),
+            el("td", "n", f(c.area)),
+          );
+          body.appendChild(tr);
+        });
+      }
+ 
+      $("f").onsubmit = (e) => {
+        e.preventDefault();
+        filter();
+      };
+      $("name").addEventListener("input", filter);
+      load();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Invented people from randomuser.me, each with a photo, a name and an email."
+    />
+    <title>Stranger Snapshots</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Karla:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Layout: a yellow table top, a ticket-style form, and polaroids laid out in a loose grid. */
+      :root {
+        --table: #ffd23f;
+        --ink: #1b1b3a;
+        --pink: #c81e65;
+        --white: #ffffff;
+        --f-head: "Fraunces", Georgia, "Times New Roman", serif;
+        --f-hand: "Caveat", "Comic Sans MS", cursive;
+        --f-body: "Karla", system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--table);
+        color: var(--ink);
+        font: 400 17px/1.5 var(--f-body);
+        padding: 40px clamp(16px, 5vw, 56px) 64px;
+      }
+      header,
+      main {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+      h1 {
+        font: 900 clamp(2.6rem, 9vw, 4.8rem) / 0.98 var(--f-head);
+        letter-spacing: -0.02em;
+        margin: 0 0 12px;
+        text-wrap: balance;
+      }
+      .lede {
+        font-size: 1.1rem;
+        margin: 0 0 24px;
+        max-width: 48ch;
+      }
+      form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px 20px;
+        align-items: end;
+        width: fit-content;
+        max-width: 100%;
+        background: var(--white);
+        border: 3px solid var(--ink);
+        border-radius: 4px;
+        padding: 16px 20px;
+        box-shadow: 6px 6px 0 var(--ink);
+      }
+      label {
+        display: grid;
+        gap: 4px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      select {
+        font: inherit;
+        font-weight: 400;
+        min-height: 44px;
+        padding: 8px 12px;
+        color: var(--ink);
+        background: var(--white);
+        border: 2px solid var(--ink);
+        border-radius: 4px;
+      }
+      button {
+        font: 700 1rem/1.2 var(--f-body);
+        min-height: 44px;
+        padding: 10px 22px;
+        background: var(--pink);
+        color: #fff;
+        border: 2px solid var(--ink);
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) {
+        background: #a5154f;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
+      select:focus-visible,
+      button:focus-visible,
+      a:focus-visible {
+        outline: 3px solid var(--ink);
+        outline-offset: 3px;
+      }
+      #msg {
+        margin: 26px auto 0;
+        max-width: 1000px;
+        font-weight: 700;
+      }
+      #msg.err {
+        color: #7a0020;
+      }
+      #grid {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 34px 26px;
+        padding: 26px 8px 0;
+      }
+      .snap {
+        background: var(--white);
+        padding: 14px 14px 20px;
+        box-shadow: 0 10px 22px rgba(27, 27, 58, 0.28);
+        transform: rotate(-1.6deg);
+        transition: transform 0.2s;
+        min-width: 0;
+      }
+      .snap:nth-child(3n + 2) {
+        transform: rotate(1.4deg);
+      }
+      .snap:nth-child(3n) {
+        transform: rotate(-0.4deg);
+      }
+      .snap:hover {
+        transform: rotate(0deg) translateY(-4px);
+      }
+      .snap img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        background: #dcdce8;
+        margin-bottom: 12px;
+      }
+      .snap h2 {
+        font: 700 1.75rem/1.05 var(--f-hand);
+        margin: 0 0 6px;
+        overflow-wrap: anywhere;
+      }
+      .snap a {
+        color: var(--pink);
+        font-size: 0.88rem;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+      }
+      .snap small {
+        display: block;
+        margin-top: 8px;
+        font-size: 0.85rem;
+        color: #44445c;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .snap {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Stranger Snapshots</h1>
+      <p class="lede">
+        Invented people from randomuser.me, each with a photo, a name and an
+        email. Choose how many to pull out of the box.
+      </p>
+      <form id="f">
+        <label for="n"
+          >How many snapshots
+          <select id="n">
+            <option>3</option>
+            <option selected>6</option>
+            <option>9</option>
+            <option>12</option>
+          </select>
+        </label>
+        <label for="g"
+          >Show
+          <select id="g">
+            <option value="">Anyone</option>
+            <option value="female">Women</option>
+            <option value="male">Men</option>
+          </select>
+        </label>
+        <button id="go" type="submit">Get snapshots</button>
+      </form>
+    </header>
+ 
+    <main>
+      <p id="msg" role="status" aria-live="polite">
+        Pick a number, then press Get snapshots.
+      </p>
+      <div id="grid"></div>
+    </main>
+ 
+    <script>
+      const $ = (id) => document.getElementById(id);
+ 
+      function el(tag, text) {
+        const n = document.createElement(tag);
+        if (text != null) n.textContent = text;
+        return n;
+      }
+ 
+      $("f").onsubmit = async (ev) => {
+        ev.preventDefault();
+        const g = $("g").value;
+        const url =
+          "https://randomuser.me/api/?results=" +
+          $("n").value +
+          (g ? "&gender=" + g : "");
+        $("go").disabled = true;
+        $("msg").className = "";
+        $("msg").textContent = "Developing the photos…";
+        $("grid").innerHTML = "";
+        try {
+          const r = await fetch(url);
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          const { results } = await r.json();
+          if (!Array.isArray(results)) throw new Error("Unexpected response");
+          $("msg").textContent =
+            results.length + (results.length === 1 ? " snapshot" : " snapshots") + " ready.";
+          results.forEach((u) => {
+            const d = document.createElement("article");
+            d.className = "snap";
+            const img = document.createElement("img");
+            img.src = u.picture.large;
+            img.alt = "Photo of " + u.name.first + " " + u.name.last;
+            img.width = 128;
+            img.height = 128;
+            const h = el("h2", u.name.title + " " + u.name.first + " " + u.name.last);
+            const a = el("a", u.email);
+            a.href = "mailto:" + u.email;
+            const s = el("small", u.location.city + ", " + u.location.country);
+            d.append(img, h, a, s);
+            $("grid").appendChild(d);
+          });
+        } catch (e) {
+          $("msg").className = "err";
+          $("msg").textContent =
+            "The photos did not arrive (" +
+            e.message +
+            "). Press Get snapshots to try again.";
+        }
+        $("go").disabled = false;
+      };
+    </script>
+  </body>
+</html>
