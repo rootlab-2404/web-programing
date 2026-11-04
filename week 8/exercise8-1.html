@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get in Touch | Asadbek Nosirjonov</title>
+  <style>
+    :root {
+      --bg: #1a1626;
+      --card: #251f36;
+      --line: #3d3556;
+      --text: #f1ecfb;
+      --muted: #a79dc2;
+      --accent: #f5b942;
+      --green: #4ade80;
+      --danger: #ff6b81;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    header {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    header .who { font-weight: 600; }
+    header .id { color: var(--accent); font-family: ui-monospace, Consolas, monospace; font-size: .9rem; }
+    main { max-width: 640px; margin: 32px auto; padding: 0 16px 48px; }
+    h1 { margin: 0 0 6px; font-size: 2rem; }
+    .intro { color: var(--muted); margin: 0 0 24px; }
+    code { background: #0b1524; padding: 1px 6px; border-radius: 4px; color: var(--accent); }
+
+    form { background: var(--card); border: 1px solid var(--line); border-top: 5px solid var(--accent); border-radius: 6px; padding: 28px; box-shadow: 0 12px 32px rgba(0,0,0,.35); }
+    fieldset { border: 0; padding: 0; margin: 0 0 24px; }
+    legend { font-weight: 700; color: var(--accent); margin-bottom: 12px; letter-spacing: .04em; text-transform: uppercase; font-size: .8rem; }
+    label { display: block; margin: 14px 0 6px; font-weight: 600; }
+    .req { color: var(--danger); }
+    input[type="text"], input[type="email"], input[type="tel"], select, textarea {
+      width: 100%; padding: 10px 12px;
+      background: #181328; color: var(--text);
+      border: 2px solid var(--line); border-radius: 3px;
+      font: inherit;
+    }
+    textarea { min-height: 130px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+
+    /* Validation states: only after the user typed something */
+    input:not(:placeholder-shown):valid,
+    textarea:not(:placeholder-shown):valid { border-color: var(--green); }
+    input:not(:placeholder-shown):invalid,
+    textarea:not(:placeholder-shown):invalid { border-color: var(--danger); }
+    select:valid { border-color: var(--green); }
+
+    .error { display: none; color: var(--danger); font-size: .85rem; margin: 6px 0 0; }
+    input:not(:placeholder-shown):invalid ~ .error,
+    textarea:not(:placeholder-shown):invalid ~ .error { display: block; }
+
+    .options { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 4px; }
+    .options label { display: flex; align-items: center; gap: 6px; margin: 0; font-weight: 400; }
+    .consent { display: flex; align-items: flex-start; gap: 8px; margin-top: 18px; font-weight: 400; }
+    .hint { color: var(--muted); font-size: .85rem; text-align: right; margin: 4px 0 0; }
+
+    .controls { display: flex; gap: 10px; }
+    button {
+      padding: 11px 26px; border: 0; border-radius: 3px; cursor: pointer;
+      font: inherit; font-weight: 700; letter-spacing: .03em;
+      background: var(--accent); color: #2a1d00;
+    }
+    button.secondary { background: transparent; color: var(--text); border: 2px solid var(--line); }
+    button:hover { filter: brightness(1.1); }
+
+    .success { margin-top: 20px; padding: 14px 16px; border-radius: 4px; background: #14291f; border: 1px solid var(--green); color: var(--green); }
+    .success[hidden] { display: none; }
+    footer { text-align: center; color: var(--muted); font-size: .85rem; padding-bottom: 24px; }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="who">Asadbek Nosirjonov</span>
+    <span class="id">ID: 202537228</span>
+  </header>
+
+  <main>
+    <form id="contact-form" action="#" method="POST" autocomplete="on">
+      <fieldset>
+        <legend>About You</legend>
+
+        <label for="name">Full Name <span class="req" aria-hidden="true">*</span></label>
+        <input type="text" id="name" name="name" placeholder="Asadbek Nosirjonov" required minlength="2" maxlength="50" pattern="[A-Za-z' \-]{2,50}" title="Letters, spaces, apostrophes and hyphens only (2-50 characters)">
+        <p class="error">Enter your name (2-50 letters).</p>
+
+        <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
+        <input type="email" id="email" name="email" placeholder="name@example.com" required>
+        <p class="error">Enter a valid email, like name@example.com.</p>
+
+        <label for="phone">Phone <span class="req" aria-hidden="true">*</span></label>
+        <input type="tel" id="phone" name="phone" placeholder="+82 10 1234 5678" required pattern="\+?[0-9 \-]{9,16}" title="9-16 digits; spaces, dashes and a leading + are allowed">
+        <p class="error">Enter a valid phone number (9-16 digits).</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Your Request</legend>
+
+        <label for="topic">Topic <span class="req" aria-hidden="true">*</span></label>
+        <select id="topic" name="topic" required>
+          <option value="" disabled selected>Choose a topic...</option>
+          <option>Question</option>
+          <option>Feedback</option>
+          <option>Collaboration</option>
+          <option>Other</option>
+        </select>
+
+        <label>Preferred reply by</label>
+        <div class="options">
+          <label><input type="radio" name="reply" value="email" checked> Email</label>
+          <label><input type="radio" name="reply" value="phone"> Phone</label>
+        </div>
+
+        <label for="message">Message <span class="req" aria-hidden="true">*</span></label>
+        <textarea id="message" name="message" placeholder="Tell me what you need..." required minlength="15" maxlength="400"></textarea>
+        <p class="error">Message must be at least 15 characters.</p>
+        <p class="hint" id="counter" aria-live="polite">0 / 400</p>
+
+        <label class="consent"><input type="checkbox" id="agree" name="agree" required> I agree to be contacted about this request.</label>
+      </fieldset>
+
+      <div class="controls">
+        <button type="submit">Submit</button>
+        <button type="reset" class="secondary">Reset</button>
+      </div>
+    </form>
+
+    <p id="result" class="success" role="status" hidden></p>
+  </main>
+
+  <footer>Homework by Asadbek Nosirjonov (202537228)</footer>
+
+  <script>
+    const form = document.getElementById('contact-form');
+    const message = document.getElementById('message');
+    const counter = document.getElementById('counter');
+    const result = document.getElementById('result');
+
+    function updateCounter() {
+      counter.textContent = message.value.length + ' / ' + message.maxLength;
+    }
+
+    message.addEventListener('input', updateCounter);
+    form.addEventListener('reset', () => { result.hidden = true; setTimeout(updateCounter); });
+
+    // "submit" only fires once every constraint passes.
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = form.elements.name.value.trim();
+      const topic = form.elements.topic.value;
+      form.reset();
+      result.textContent = 'Thank you, ' + name + '! Your "' + topic + '" message was received (demo only, nothing is sent).';
+      result.hidden = false;
+    });
+  </script>
+</body>
+</html>
