@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accessibility Audit | Access Lab</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 2px dashed #d9d3c4; vertical-align: middle; }
+    th { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .sw { display: inline-block; width: 22px; height: 22px; border: 2px solid var(--ink); border-radius: 6px; vertical-align: middle; margin-right: 6px; }
+    .scorebox { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .score { text-align: center; padding: 18px 10px; border: 3px solid var(--ink); border-radius: 14px; background: #f1ebdd; }
+    .score .num { font-size: 3rem; font-weight: 800; line-height: 1; }
+    .score.good .num { color: var(--ok); }
+    .score.mid .num { color: var(--accent-text); }
+    .score.low .num { color: var(--bad); }
+    .score small { display: block; color: var(--muted); font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
+    .todo { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+    .todo label { display: flex; gap: 12px; align-items: flex-start; margin: 0; font-weight: 500; cursor: pointer; }
+    .todo input { width: 22px; height: 22px; margin-top: 3px; accent-color: var(--ink); flex: none; }
+    .tally { font-weight: 800; }
+    @media (max-width: 560px) { .scorebox { grid-template-columns: 1fr; } .table-wrap { overflow-x: auto; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+
+  <header class="topbar">
+    <a href="index.html">Access Lab</a>
+    <span class="id">Asadbek Nosirjonov · ID 202537228</span>
+  </header>
+
+  <main id="main">
+    <span class="eyebrow">Exercise 5 · Audit</span>
+    <h1>Accessibility <mark>audit</mark></h1>
+    <p class="lead">What I checked on this site, the contrast numbers I measured, and a place to record your own Lighthouse scores.</p>
+
+    <section class="card" aria-labelledby="h-1">
+      <h2 id="h-1">01 · Contrast I measured</h2>
+      <p>I computed these ratios with the WCAG formula before choosing the colours. AA needs 4.5:1 for normal text.</p>
+      <div class="table-wrap">
+        <table>
+          <caption class="sr-only" style="position:absolute;left:-9999px">Measured contrast ratios</caption>
+          <thead><tr><th scope="col">Pair</th><th scope="col">Ratio</th><th scope="col">AA text</th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><span class="sw" style="background:#1b1b2f"></span>Ink on paper (body text)</th><td>15.80:1</td><td><span class="badge pass">Pass</span></td></tr>
+            <tr><th scope="row"><span class="sw" style="background:#4a4a63"></span>Muted text on paper</th><td>8.02:1</td><td><span class="badge pass">Pass</span></td></tr>
+            <tr><th scope="row"><span class="sw" style="background:#b83c05"></span>Dark orange text on paper</th><td>5.33:1</td><td><span class="badge pass">Pass</span></td></tr>
+            <tr><th scope="row"><span class="sw" style="background:#0b6477"></span>Dark teal links on paper</th><td>6.34:1</td><td><span class="badge pass">Pass</span></td></tr>
+            <tr><th scope="row"><span class="sw" style="background:#ff8a3d"></span>Ink on bright orange (buttons)</th><td>7.20:1</td><td><span class="badge pass">Pass</span></td></tr>
+            <tr><th scope="row"><span class="sw" style="background:#5fd3e6"></span>Ink on bright teal (buttons)</th><td>9.60:1</td><td><span class="badge pass">Pass</span></td></tr>
+            <tr><th scope="row"><span class="sw" style="background:#e9fbff"></span>Key log text on ink</th><td>15.84:1</td><td><span class="badge pass">Pass</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="h-2">
+      <h2 id="h-2">02 · Problems I avoided</h2>
+      <p>Two colour choices looked fine to the eye but fail the numbers, so I did not use them for text:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Rejected</th><th scope="col">Ratio</th><th scope="col">Used instead</th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><span class="sw" style="background:#ff8a3d"></span>Bright orange as text on paper</th><td>2.20:1 <span class="badge fail">Fail</span></td><td>Dark orange <code>#b83c05</code> (5.33:1)</td></tr>
+            <tr><th scope="row"><span class="sw" style="background:#5fd3e6"></span>Bright teal as text on paper</th><td>1.65:1 <span class="badge fail">Fail</span></td><td>Dark teal <code>#0b6477</code> (6.34:1)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-bottom:0">Bright orange and teal stay as <em>backgrounds</em> behind dark ink text, where they pass easily.</p>
+    </section>
+
+    <section class="card" aria-labelledby="h-3">
+      <h2 id="h-3">03 · Built in on every page</h2>
+      <ul>
+        <li><code>lang="en"</code> on the page, so screen readers pick the right voice.</li>
+        <li>A "Skip to main content" link that appears on first Tab.</li>
+        <li>One <code>h1</code> per page and headings that do not skip levels.</li>
+        <li>A thick, high-contrast <code>:focus-visible</code> outline on every control.</li>
+        <li>Real <code>button</code>, <code>label</code> and <code>nav</code> elements, with <code>aria-expanded</code>, <code>aria-checked</code> and live regions where state changes.</li>
+        <li><code>prefers-reduced-motion</code> turns off transitions and smooth scrolling.</li>
+        <li>Layouts that stack on narrow screens, with no sideways scrolling.</li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="h-4">
+      <h2 id="h-4">04 · Your Lighthouse scores</h2>
+      <p>I cannot run Lighthouse for you, so this box is empty on purpose. In Chrome: open DevTools, choose Lighthouse, tick Accessibility, run it on a page, then type the score here.</p>
+      <div class="row">
+        <div>
+          <label for="before">Score before fixes</label>
+          <input type="text" id="before" inputmode="numeric" maxlength="3" placeholder="e.g. 87" style="max-width:140px">
+        </div>
+        <div>
+          <label for="after">Score after fixes</label>
+          <input type="text" id="after" inputmode="numeric" maxlength="3" placeholder="e.g. 100" style="max-width:140px">
+        </div>
+      </div>
+      <div class="scorebox" style="margin-top:18px" aria-live="polite">
+        <div class="score" id="s-before"><small>Before</small><span class="num">--</span></div>
+        <div class="score" id="s-after"><small>After</small><span class="num">--</span></div>
+      </div>
+      <p id="delta" style="margin-bottom:0;font-weight:700"></p>
+    </section>
+
+    <section class="card" aria-labelledby="h-5">
+      <h2 id="h-5">05 · Manual checks</h2>
+      <p>Tick these as you test. Automated tools miss a lot.</p>
+      <ul class="todo">
+        <li><label><input type="checkbox"> I used every page with the keyboard only.</label></li>
+        <li><label><input type="checkbox"> I zoomed to 200% and nothing was cut off.</label></li>
+        <li><label><input type="checkbox"> I tried a screen reader on at least one page.</label></li>
+        <li><label><input type="checkbox"> Every image has useful alt text, or is marked decorative.</label></li>
+        <li><label><input type="checkbox"> Every form field has a visible label.</label></li>
+      </ul>
+      <p class="tally" id="tally" aria-live="polite" style="margin-bottom:0">0 of 5 done</p>
+    </section>
+
+    <nav class="nav-foot" aria-label="Exercises">
+      <a class="btn" href="registration-asadbek.html">Previous: Sign-up</a>
+      <a class="btn alt" href="index.html">Back to the hub</a>
+    </nav>
+  </main>
+
+  <footer>Made by Asadbek Nosirjonov · ID 202537228</footer>
+
+  <script>
+    const before = document.getElementById('before');
+    const after = document.getElementById('after');
+    const sb = document.getElementById('s-before');
+    const sa = document.getElementById('s-after');
+    const delta = document.getElementById('delta');
+
+    function clean(input) {
+      input.value = input.value.replace(/\D/g, '').slice(0, 3);
+      const n = parseInt(input.value, 10);
+      return Number.isFinite(n) && n >= 0 && n <= 100 ? n : null;
+    }
+    function paint(box, n) {
+      box.querySelector('.num').textContent = n === null ? '--' : n;
+      box.className = 'score' + (n === null ? '' : n >= 90 ? ' good' : n >= 50 ? ' mid' : ' low');
+    }
+    function update() {
+      const b = clean(before), a = clean(after);
+      paint(sb, b);
+      paint(sa, a);
+      if (b !== null && a !== null) {
+        const d = a - b;
+        delta.textContent = d > 0 ? 'Up ' + d + ' points (' + b + ' → ' + a + ').' : d < 0 ? 'Down ' + Math.abs(d) + ' points (' + b + ' → ' + a + ').' : 'No change (' + a + ').';
+      } else {
+        delta.textContent = '';
+      }
+    }
+    before.addEventListener('input', update);
+    after.addEventListener('input', update);
+
+    const boxes = document.querySelectorAll('.todo input');
+    const tally = document.getElementById('tally');
+    boxes.forEach((b) => b.addEventListener('change', () => {
+      tally.textContent = [...boxes].filter((x) => x.checked).length + ' of ' + boxes.length + ' done';
+    }));
+  </script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keyboard Playground | Access Lab</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .switch {
+      display: inline-flex; align-items: center; gap: 14px; padding: 8px 16px 8px 8px;
+      background: #fff; border-radius: 999px;
+    }
+    .switch .track {
+      width: 64px; height: 34px; border: 3px solid var(--ink); border-radius: 999px;
+      background: #d9d3c4; position: relative; transition: background .2s;
+    }
+    .switch .thumb {
+      position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%;
+      background: var(--ink); transition: transform .2s;
+    }
+    .switch[aria-checked="true"] .track { background: var(--teal); }
+    .switch[aria-checked="true"] .thumb { transform: translateX(30px); }
+    .panel { margin-top: 14px; padding: 14px 16px; background: #f1ebdd; border: 3px solid var(--ink); border-radius: 10px; }
+    .panel[hidden] { display: none; }
+    #log {
+      height: 220px; overflow: auto; margin: 10px 0 0; padding: 12px;
+      background: var(--ink); color: #e9fbff; border-radius: 10px;
+      font-family: ui-monospace, Consolas, monospace; font-size: .88rem; line-height: 1.5;
+    }
+    #log div { border-bottom: 1px dashed #3d3d5c; padding: 2px 0; }
+    #log .focus { color: #ffc999; }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+
+  <header class="topbar">
+    <a href="index.html">Access Lab</a>
+    <span class="id">Asadbek Nosirjonov · ID 202537228</span>
+  </header>
+
+  <main id="main">
+    <span class="eyebrow">Exercise 1</span>
+    <h1>Keyboard <mark>playground</mark></h1>
+    <p class="lead">Put your mouse away. Use <code>Tab</code>, <code>Shift+Tab</code>, <code>Space</code> and <code>Enter</code> to operate everything on this page.</p>
+
+    <section class="card" aria-labelledby="h-switch">
+      <h2 id="h-switch">1. A switch</h2>
+      <p>Built from a <code>button</code> with <code>role="switch"</code>. Space or Enter toggles it, and screen readers announce on/off.</p>
+      <button type="button" id="sw" class="switch" role="switch" aria-checked="false">
+        <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+        <span>Dark mode simulation: <strong id="sw-state">off</strong></span>
+      </button>
+    </section>
+
+    <section class="card" aria-labelledby="h-disc">
+      <h2 id="h-disc">2. A disclosure</h2>
+      <p>A button controls a region. <code>aria-expanded</code> tells assistive tech whether it is open.</p>
+      <button type="button" id="disc" aria-expanded="false" aria-controls="disc-panel">Show details</button>
+      <div class="panel" id="disc-panel" hidden>
+        Real buttons get focus, Space and Enter handling for free. A clickable <code>&lt;div&gt;</code> gets none of that.
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="h-log">
+      <h2 id="h-log">3. Live log</h2>
+      <p>Every key you press and every element that receives focus is written here. Click in the box below, then type.</p>
+      <label for="sandbox">Type here</label>
+      <input type="text" id="sandbox" autocomplete="off">
+      <div class="row" style="margin-top:14px">
+        <button type="button" id="clear" class="alt">Clear log</button>
+      </div>
+      <div id="log" role="log" tabindex="0" aria-label="Event log"></div>
+    </section>
+
+    <nav class="nav-foot" aria-label="Exercises">
+      <a class="btn" href="index.html">All exercises</a>
+      <a class="btn alt" href="alt.html">Next: Alt text</a>
+    </nav>
+  </main>
+
+  <footer>Made by Asadbek Nosirjonov · ID 202537228</footer>
+
+  <script>
+    const sw = document.getElementById('sw');
+    const swState = document.getElementById('sw-state');
+    sw.addEventListener('click', () => {
+      const on = sw.getAttribute('aria-checked') !== 'true';
+      sw.setAttribute('aria-checked', String(on));
+      swState.textContent = on ? 'on' : 'off';
+    });
+
+    const disc = document.getElementById('disc');
+    const panel = document.getElementById('disc-panel');
+    disc.addEventListener('click', () => {
+      const open = disc.getAttribute('aria-expanded') === 'true';
+      disc.setAttribute('aria-expanded', String(!open));
+      panel.hidden = open;
+      disc.textContent = open ? 'Show details' : 'Hide details';
+    });
+
+    const log = document.getElementById('log');
+    function write(text, cls) {
+      const row = document.createElement('div');
+      if (cls) row.className = cls;
+      row.textContent = new Date().toLocaleTimeString('en-GB') + '  ' + text;
+      log.appendChild(row);
+      log.scrollTop = log.scrollHeight;
+      while (log.children.length > 80) log.removeChild(log.firstChild);
+    }
+    function describe(el) {
+      if (!el || el === document.body) return 'page';
+      const name = el.id ? '#' + el.id : el.tagName.toLowerCase();
+      const label = (el.getAttribute('aria-label') || el.textContent || '').trim().slice(0, 28);
+      return name + (label ? ' "' + label + '"' : '');
+    }
+    document.addEventListener('keydown', (e) => {
+      if (log.contains(e.target) && e.key.startsWith('Arrow')) return;
+      const keyName = e.key === ' ' ? 'Space' : e.key;
+      write('key: ' + keyName + (e.shiftKey ? ' (+Shift)' : '') + (e.ctrlKey ? ' (+Ctrl)' : ''));
+    });
+    document.addEventListener('focusin', (e) => {
+      if (e.target === log) return;
+      write('focus → ' + describe(e.target), 'focus');
+    });
+    document.getElementById('clear').addEventListener('click', () => { log.textContent = ''; });
+  </script>
+</body>
+</html>
