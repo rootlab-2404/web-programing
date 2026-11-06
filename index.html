@@ -101,6 +101,29 @@
     .week.featured .label, .week.featured .desc, .week.featured .count { color: #e0e7ff; }
     .week.featured .tag { background: rgba(255, 255, 255, .12); color: #fff; border-color: rgba(255, 255, 255, .3); }
     .week.featured .go { color: #fff; }
+    .week.team.proposal {
+      background:
+        radial-gradient(circle at 90% 10%, rgba(103, 232, 249, .18), transparent 40%),
+        linear-gradient(135deg, #1e3a5f, #155e75);
+    }
+    .week.team.files { background: linear-gradient(135deg, #312e81, #4338ca); }
+    .week.team.files .label { color: #e0e7ff; }
+    .week.team.proposal:hover { box-shadow: 0 18px 40px -16px rgba(21, 94, 117, .55); }
+    .week.team.proposal .label, .week.team.proposal .desc, .week.team.proposal .count { color: #cffafe; }
+    .week.team {
+      color: #fff; border-color: transparent;
+      background:
+        radial-gradient(circle at 90% 10%, rgba(253, 224, 71, .18), transparent 40%),
+        linear-gradient(135deg, #134e4a, #0f766e);
+    }
+    .week.team:hover { border-color: transparent; box-shadow: 0 18px 40px -16px rgba(15, 118, 110, .55); }
+    .week.team:focus-visible { outline-color: var(--focus-dark); }
+    .week.team .num { background: rgba(255, 255, 255, .15); color: #fff; font-size: 1.5rem; }
+    .week.team .label, .week.team .desc, .week.team .count { color: #ccfbf1; }
+    .week.team strong { font-size: 1.6rem; }
+    .week.team { justify-content: center; }
+    .week.team .tag { background: rgba(255, 255, 255, .12); color: #fff; border-color: rgba(255, 255, 255, .3); }
+    .week.team .go { color: #fff; }
     .new { font-size: .72rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; padding: 2px 8px; border-radius: 6px; background: #fcd34d; color: var(--hero-1); margin-left: 8px; vertical-align: middle; }
 
     /* ---------- Skills ---------- */
@@ -234,8 +257,23 @@
                 <span class="go" aria-hidden="true">&rarr;</span>
               </a>
             </li>
-            <li>
-              <a href="https://bahriddinoff01.github.io/ai-travel-planner/">Team Project</a>
+            <li class="team-item">
+              <a class="week team" href="https://bahriddinoff01.github.io/ai-travel-planner/">
+                <span class="top"><span class="num" aria-hidden="true">&#9992;</span><span><span class="label">Team</span><strong>Project</strong></span></span>
+                <span class="go" aria-hidden="true">&#8599;</span>
+              </a>
+            </li>
+            <li class="team-item">
+              <a class="week team proposal" href="https://bahriddinoff01.github.io/team-19-proposal/">
+                <span class="top"><span class="num" aria-hidden="true">&#128196;</span><span><span class="label">Team</span><strong>Proposal</strong></span></span>
+                <span class="go" aria-hidden="true">&#8599;</span>
+              </a>
+            </li>
+            <li class="team-item">
+              <a class="week team files" href="./team files/index.html">
+                <span class="top"><span class="num" aria-hidden="true">&#128193;</span><span><span class="label">Team</span><strong>Files</strong></span></span>
+                <span class="go" aria-hidden="true">&rarr;</span>
+              </a>
             </li>
           </ul>
         </nav>
