@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Access Lab Self-Audit · Access Lab | Asadbek Nosirjonov</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .sw { display: inline-block; width: 26px; height: 26px; border-radius: 8px; vertical-align: middle; margin-right: 10px; border: 1px solid rgba(15, 23, 42, .2); }
+    .pair { display: inline-flex; align-items: center; justify-content: center; min-width: 46px; padding: 2px 10px; border-radius: 8px; font-weight: 800; border: 1px solid rgba(15, 23, 42, .15); }
+    td.num { font-family: var(--mono); font-weight: 700; white-space: nowrap; }
+    .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 18px; }
+    .stat-box { padding: 18px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); text-align: center; }
+    .stat-box strong { display: block; font-size: 2rem; line-height: 1.1; color: var(--primary); }
+    .stat-box span { color: var(--muted); font-size: .9rem; font-weight: 600; }
+    .built { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; list-style: none; padding: 0; margin: 0; }
+    .built li { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); }
+    .built li::before { content: "\2713"; flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--ok-soft); color: var(--ok); display: grid; place-items: center; font-weight: 900; font-size: .8rem; }
+    .scorebox { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+    .score { text-align: center; padding: 20px 10px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); }
+    .score .num { display: block; font-size: 3rem; font-weight: 900; line-height: 1; }
+    .score.good .num { color: var(--ok); }
+    .score.mid .num { color: var(--warn); }
+    .score.low .num { color: var(--bad); }
+    .score small { display: block; color: var(--muted); font-weight: 800; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+    .todo { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+    .todo label { display: flex; gap: 12px; align-items: flex-start; margin: 0; padding: 12px 14px; font-weight: 500; cursor: pointer; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); }
+    .todo input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--primary); flex: none; }
+    .todo input:checked + span { text-decoration: line-through; color: var(--muted); }
+    .bar { height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; margin-top: 14px; }
+    .bar span { display: block; height: 100%; width: 0; background: var(--ok); transition: width .3s; }
+    @media (max-width: 720px) { .summary, .built, .scorebox { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html"><span class="logo" aria-hidden="true">A</span><span>Access Lab<small>Week 9 · Web accessibility</small></span></a>
+      <nav class="site-nav" aria-label="Week 9 pages">
+        <ul>
+          <li><a href="../../index.html">All weeks</a></li>
+          <li><a href="index.html">Lab home</a></li>
+          <li><a href="keyboard.html">Keyboard</a></li>
+          <li><a href="alt.html">Alt text</a></li>
+          <li><a href="contrast.html">Contrast</a></li>
+          <li><a href="registration-asadbek.html">Sign-up</a></li>
+          <li><a href="audit.html" aria-current="page">Site audit</a></li>
+          <li><a href="../week 9-2/index.html">9-2 Audit</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="inner">
+        <span class="eyebrow">Exercise 5 of 5</span>
+        <h1 id="page-title">Access Lab <span class="hl">self-audit</span></h1>
+        <p class="lead">Every colour pair used on these pages, measured with the WCAG formula. Plus the features built into every page, a score tracker and a manual checklist.</p>
+      </div>
+    </section>
+
+    <div class="content">
+      <section class="card" aria-labelledby="h-1">
+        <div class="card-head">
+          <span class="step" aria-hidden="true">1</span>
+          <div><h2 id="h-1">Colour contrast, measured</h2><p>The page calculates these ratios live from the hex values, so the table can't be wrong.</p></div>
+        </div>
+        <div class="summary" aria-live="polite">
+          <div class="stat-box"><strong id="s-pairs">0</strong><span>pairs checked</span></div>
+          <div class="stat-box"><strong id="s-aa">0</strong><span>pass AA (4.5:1)</span></div>
+          <div class="stat-box"><strong id="s-aaa">0</strong><span>also pass AAA (7:1)</span></div>
+        </div>
+        <div class="table-wrap" role="region" aria-label="Contrast table, scrollable" tabindex="0">
+          <table>
+            <caption class="sr-only">Measured contrast ratios for the Access Lab colour palette</caption>
+            <thead><tr><th scope="col">Where it is used</th><th scope="col">Sample</th><th scope="col">Ratio</th><th scope="col">AA</th><th scope="col">AAA</th></tr></thead>
+            <tbody id="pairs"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="h-2">
+        <div class="card-head">
+          <span class="step" aria-hidden="true">2</span>
+          <div><h2 id="h-2">Colours I rejected</h2><p>They looked fine but failed the numbers, so they are only used as backgrounds or decoration.</p></div>
+        </div>
+        <div class="table-wrap" role="region" aria-label="Rejected colours table, scrollable" tabindex="0">
+          <table>
+            <caption class="sr-only">Rejected colour pairs and their replacements</caption>
+            <thead><tr><th scope="col">Rejected pair</th><th scope="col">Ratio</th><th scope="col">Used instead</th><th scope="col">Ratio</th></tr></thead>
+            <tbody id="rejected"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="h-3">
+        <div class="card-head">
+          <span class="step" aria-hidden="true">3</span>
+          <div><h2 id="h-3">Built into every page</h2><p>The same checklist applies to all six Week 9 pages.</p></div>
+        </div>
+        <ul class="built">
+          <li><span><code>lang="en"</code> so screen readers use the right voice.</span></li>
+          <li><span>A "Skip to main content" link, shown on the first <code>Tab</code>.</span></li>
+          <li><span><code>header</code>, <code>nav</code>, <code>main</code> and <code>footer</code> landmarks.</span></li>
+          <li><span>One <code>h1</code> and headings that never skip a level.</span></li>
+          <li><span>A 3px amber <code>:focus-visible</code> outline on every control.</span></li>
+          <li><span><code>aria-current="page"</code> marks the current page in the menu.</span></li>
+          <li><span>Live regions announce results (ratios, scores, errors).</span></li>
+          <li><span><code>prefers-reduced-motion</code> turns off all animation.</span></li>
+          <li><span>Layouts stack on small screens. No sideways scrolling at 320px.</span></li>
+          <li><span>Text uses <code>rem</code> sizes, so zooming to 200% works.</span></li>
+        </ul>
+      </section>
+
+      <section class="card" aria-labelledby="h-4">
+        <div class="card-head">
+          <span class="step" aria-hidden="true">4</span>
+          <div><h2 id="h-4">Lighthouse score tracker</h2><p>Run Lighthouse (DevTools → Lighthouse → Accessibility) and type the scores here. They are saved in your browser.</p></div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="before">Score before fixes</label>
+            <input type="text" id="before" inputmode="numeric" maxlength="3" placeholder="e.g. 96" style="max-width:160px">
+          </div>
+          <div>
+            <label for="after">Score after fixes</label>
+            <input type="text" id="after" inputmode="numeric" maxlength="3" placeholder="e.g. 100" style="max-width:160px">
+          </div>
+        </div>
+        <div class="scorebox">
+          <div class="score" id="s-before"><small>Before</small><span class="num">--</span></div>
+          <div class="score" id="s-after"><small>After</small><span class="num">--</span></div>
+        </div>
+        <p id="delta" aria-live="polite" style="margin:14px 0 0;font-weight:700"></p>
+      </section>
+
+      <section class="card" aria-labelledby="h-5">
+        <div class="card-head">
+          <span class="step" aria-hidden="true">5</span>
+          <div><h2 id="h-5">Manual checks</h2><p>Automated tools find only about a third of real problems. Tick these as you test.</p></div>
+        </div>
+        <ul class="todo">
+          <li><label><input type="checkbox" data-k="kb"><span>I used every page with the keyboard only.</span></label></li>
+          <li><label><input type="checkbox" data-k="zoom"><span>I zoomed to 200% and nothing was cut off.</span></label></li>
+          <li><label><input type="checkbox" data-k="sr"><span>I tried a screen reader (NVDA or Narrator) on at least one page.</span></label></li>
+          <li><label><input type="checkbox" data-k="alt"><span>Every image has useful alt text, or is marked decorative.</span></label></li>
+          <li><label><input type="checkbox" data-k="lbl"><span>Every form field has a visible label.</span></label></li>
+          <li><label><input type="checkbox" data-k="motion"><span>With "reduce motion" turned on, nothing animates.</span></label></li>
+        </ul>
+        <div class="bar" aria-hidden="true"><span id="bar"></span></div>
+        <p id="tally" aria-live="polite" style="margin:10px 0 0;font-weight:800">0 of 6 done</p>
+      </section>
+
+      <nav class="pager" aria-label="Exercises">
+        <a href="registration-asadbek.html"><span>Previous</span><strong>&larr; Accessible sign-up form</strong></a>
+        <a class="next" href="../week 9-2/index.html"><span>Week 9-2</span><strong>Portfolio Lighthouse audit &rarr;</strong></a>
+      </nav>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner"><span>Made by Asadbek Nosirjonov · ID 202537228</span><span>Web Programming · Week 9</span></div>
+  </footer>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const toRgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+    function lum(hex) {
+      const [r, g, b] = toRgb(hex).map((v) => { const c = v / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+    const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
+    const fmt = (r) => (Math.floor(r * 100) / 100).toFixed(2) + ':1';
+    const badge = (ok) => '<span class="badge ' + (ok ? 'pass' : 'fail') + '">' + (ok ? 'Pass' : 'Fail') + '</span>';
+    const sample = (fg, bg) => '<span class="pair" style="color:' + fg + ';background:' + bg + '" aria-hidden="true">Aa</span> <code>' + fg + '</code> on <code>' + bg + '</code>';
+
+    const PAIRS = [
+      ['Body text', '#0f172a', '#ffffff'],
+      ['Body text on page background', '#0f172a', '#f4f6fb'],
+      ['Muted text (descriptions)', '#475569', '#ffffff'],
+      ['Muted text on grey boxes', '#475569', '#f8fafc'],
+      ['Links and primary text', '#4338ca', '#ffffff'],
+      ['White text on primary buttons', '#ffffff', '#4338ca'],
+      ['White text on button hover', '#ffffff', '#312e81'],
+      ['Code text', '#312e81', '#eef2ff'],
+      ['"Pass" badges', '#166534', '#dcfce7'],
+      ['"Fail" badges and errors', '#991b1b', '#fee2e2'],
+      ['Error text on white', '#991b1b', '#ffffff'],
+      ['Hero lead text', '#e0e7ff', '#1e1b4b'],
+      ['Menu links', '#e2e8f0', '#0f172a'],
+      ['Placeholder text', '#64748b', '#ffffff'],
+      ['Focus outline on white (3:1 needed)', '#b45309', '#ffffff']
+    ];
+    const REJECTED = [
+      ['#f59e0b', '#ffffff', 'Amber as text', '#b45309'],
+      ['#22d3ee', '#ffffff', 'Cyan as text', '#0e7490'],
+      ['#818cf8', '#ffffff', 'Light indigo as text', '#4338ca'],
+      ['#94a3b8', '#ffffff', 'Light grey placeholder', '#64748b']
+    ];
+
+    let aa = 0, aaa = 0;
+    $('pairs').innerHTML = PAIRS.map(([where, fg, bg]) => {
+      const r = ratio(fg, bg);
+      const need = where.includes('3:1') ? 3 : 4.5;
+      if (r >= need) aa++;
+      if (r >= 7) aaa++;
+      return '<tr><th scope="row">' + where + '</th><td>' + sample(fg, bg) + '</td><td class="num">' + fmt(r) + '</td><td>' + badge(r >= need) + '</td><td>' + badge(r >= 7) + '</td></tr>';
+    }).join('');
+    $('s-pairs').textContent = PAIRS.length;
+    $('s-aa').textContent = aa;
+    $('s-aaa').textContent = aaa;
+
+    $('rejected').innerHTML = REJECTED.map(([fg, bg, name, fix]) => {
+      return '<tr><th scope="row"><span class="sw" style="background:' + fg + '" aria-hidden="true"></span>' + name + ' (<code>' + fg + '</code>)</th><td class="num">' + fmt(ratio(fg, bg)) + ' ' + badge(false) + '</td><td><span class="sw" style="background:' + fix + '" aria-hidden="true"></span><code>' + fix + '</code></td><td class="num">' + fmt(ratio(fix, bg)) + ' ' + badge(ratio(fix, bg) >= 3) + '</td></tr>';
+    }).join('');
+
+    // Score tracker (saved in localStorage)
+    const before = $('before'), after = $('after');
+    function clean(input) {
+      input.value = input.value.replace(/\D/g, '').slice(0, 3);
+      const n = parseInt(input.value, 10);
+      return Number.isFinite(n) && n >= 0 && n <= 100 ? n : null;
+    }
+    function paint(box, n) {
+      box.querySelector('.num').textContent = n === null ? '--' : n;
+      box.className = 'score' + (n === null ? '' : n >= 90 ? ' good' : n >= 50 ? ' mid' : ' low');
+    }
+    function updateScores() {
+      const b = clean(before), a = clean(after);
+      paint($('s-before'), b); paint($('s-after'), a);
+      try { localStorage.setItem('al-scores', JSON.stringify([before.value, after.value])); } catch (e) {}
+      if (b !== null && a !== null) {
+        const d = a - b;
+        $('delta').textContent = d > 0 ? 'Up ' + d + ' points (' + b + ' → ' + a + ').' : d < 0 ? 'Down ' + Math.abs(d) + ' points (' + b + ' → ' + a + ').' : 'No change (' + a + ').';
+      } else { $('delta').textContent = ''; }
+    }
+    try { const s = JSON.parse(localStorage.getItem('al-scores') || '[]'); before.value = s[0] || ''; after.value = s[1] || ''; } catch (e) {}
+    before.addEventListener('input', updateScores);
+    after.addEventListener('input', updateScores);
+    updateScores();
+
+    // Manual checklist (saved in localStorage)
+    const boxes = [...document.querySelectorAll('.todo input')];
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem('al-checks') || '{}'); } catch (e) {}
+    function tally() {
+      const done = boxes.filter((x) => x.checked).length;
+      $('tally').textContent = done + ' of ' + boxes.length + ' done' + (done === boxes.length ? '. Great job!' : '');
+      $('bar').style.width = (done / boxes.length * 100) + '%';
+    }
+    boxes.forEach((b) => {
+      b.checked = !!saved[b.dataset.k];
+      b.addEventListener('change', () => {
+        saved[b.dataset.k] = b.checked;
+        try { localStorage.setItem('al-checks', JSON.stringify(saved)); } catch (e) {}
+        tally();
+      });
+    });
+    tally();
+  </script>
+</body>
+</html>

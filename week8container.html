@@ -66,91 +66,21 @@
         padding: 0 18px;
       }
     }
+    .page-title { font-size: 1.8rem; color: #3730a3; margin: 12px 0 20px; }
+    .home { color: #3730a3; font-weight: 600; text-decoration: underline; }
+    .week-card { padding: 0; }
+    .week-card a { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 0 24px; color: inherit; border-radius: 12px; }
+    .week-card a:focus-visible { outline: 3px solid #1e1b4b; outline-offset: 3px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="weeks">
-    </div>
-  </div>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Week 2 Container</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    a{
-      text-decoration: none;
-    }
-
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #eef2f7;
-      color: #1f2937;
-      min-height: 100vh;
-      padding: 32px 16px;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .weeks {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .week-card {
-      width: 100%;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 24px;
-      background-color: #e0e7ff;
-      border: 2px solid #6366f1;
-      border-radius: 14px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #3730a3;
-      transition: transform 0.2s ease, background-color 0.2s ease;
-    }
-
-    .week-card:hover {
-      transform: translateY(-2px);
-      background-color: #c7d2fe;
-    }
-
-    @media (max-width: 600px) {
-      body {
-        padding: 20px 12px;
-      }
-
-      .week-card {
-        height: 50px;
-        font-size: 1rem;
-        padding: 0 18px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
+  <main class="container">
+    <a class="home" href="./index.html">&larr; All weeks</a>
+    <h1 class="page-title">Week 8</h1>
     <div class="weeks">
       <div class="week-card"><a href="week 8/exercise8-1.html">Week 8-1</a></div>
       <div class="week-card"><a href="week 8/exercise8-2.html">Week 8-2</a></div>
     </div>
-  </div>
+  </main>
 </body>
 </html>

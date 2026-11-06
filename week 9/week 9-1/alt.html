@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alt Text Workshop · Access Lab | Asadbek Nosirjonov</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .picker { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .picker button[aria-pressed="true"] { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .workshop { display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: start; }
+    .frame { border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--line); background: #fff; box-shadow: var(--shadow-sm); }
+    .frame svg { display: block; width: 100%; height: auto; }
+    .counter { display: flex; justify-content: space-between; color: var(--muted); font-size: .9rem; margin-top: 6px; }
+    .counter .over { color: var(--bad); font-weight: 700; }
+    .meter { height: 10px; background: var(--line); border-radius: 999px; overflow: hidden; margin-top: 10px; }
+    .meter span { display: block; height: 100%; width: 0; background: var(--primary); transition: width .3s, background .3s; }
+    .score-line { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .grade { font-size: 2.6rem; font-weight: 900; line-height: 1; letter-spacing: -.02em; }
+    .feedback { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 10px; }
+    .feedback li { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); }
+    .feedback .badge { flex: none; min-width: 56px; }
+    .read-aloud { margin-top: 16px; padding: 14px 16px; border-radius: var(--radius-sm); background: #0f172a; color: #e2e8f0; font-family: var(--mono); font-size: .9rem; }
+    .read-aloud span { color: #fcd34d; }
+    .kinds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .kind { padding: 18px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2); }
+    .kind .icon { font-size: 1.6rem; }
+    .kind p { margin: 6px 0 0; font-size: .95rem; }
+    @media (max-width: 820px) { .workshop, .kinds { grid-template-columns: 1fr; } .frame { max-width: 360px; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html"><span class="logo" aria-hidden="true">A</span><span>Access Lab<small>Week 9 · Web accessibility</small></span></a>
+      <nav class="site-nav" aria-label="Week 9 pages">
+        <ul>
+          <li><a href="../../index.html">All weeks</a></li>
+          <li><a href="index.html">Lab home</a></li>
+          <li><a href="keyboard.html">Keyboard</a></li>
+          <li><a href="alt.html" aria-current="page">Alt text</a></li>
+          <li><a href="contrast.html">Contrast</a></li>
+          <li><a href="registration-asadbek.html">Sign-up</a></li>
+          <li><a href="audit.html">Site audit</a></li>
+          <li><a href="../week 9-2/index.html">9-2 Audit</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="inner">
+        <span class="eyebrow">Exercise 2 of 5</span>
+        <h1 id="page-title">Alt text <span class="hl">workshop</span></h1>
+        <p class="lead">A screen reader can't see pictures. It reads the <code>alt</code> attribute out loud instead. Pick an image, describe it, and get instant feedback.</p>
+      </div>
+    </section>
+
+    <div class="content">
+      <section class="card" aria-labelledby="h-img">
+        <div class="card-head">
+          <span class="step" aria-hidden="true">1</span>
+          <div><h2 id="h-img">Choose an image and describe it</h2><p>Write what a person who can't see the picture needs to know.</p></div>
+        </div>
+
+        <div class="picker" role="group" aria-label="Choose an image">
+          <button type="button" class="alt" data-img="house" aria-pressed="true">House</button>
+          <button type="button" class="alt" data-img="chart" aria-pressed="false">Bar chart</button>
+          <button type="button" class="alt" data-img="bike" aria-pressed="false">Bicycle</button>
+        </div>
+
+        <div class="workshop">
+          <div class="frame" id="frame"></div>
+          <div>
+            <label for="alt-input">Your alt text</label>
+            <textarea id="alt-input" maxlength="200" aria-describedby="alt-help"></textarea>
+            <div class="counter"><span id="alt-help">Say what matters. Don't start with "image of".</span><span id="alt-count">0 / 125</span></div>
+            <div class="row" style="margin-top:16px">
+              <button type="button" id="rate">Rate my alt text</button>
+              <button type="button" id="sample" class="alt">Show a good example</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="h-res">
+        <div class="card-head">
+          <span class="step" aria-hidden="true">2</span>
+          <div><h2 id="h-res">Feedback</h2><p>Five rules, one point each.</p></div>
+        </div>
+        <div class="score-line"><span class="grade" id="grade">–</span><span class="muted" id="grade-word">Press "Rate my alt text" to see how you did.</span></div>
+        <div class="meter" aria-hidden="true"><span id="meter"></span></div>
+        <ul class="feedback" id="feedback" aria-live="polite"></ul>
+        <div class="read-aloud" id="read-aloud" hidden aria-hidden="true">Screen reader says: <span id="spoken"></span></div>
+      </section>
+
+      <section class="card" aria-labelledby="h-rules">
+        <div class="card-head">
+          <span class="step" aria-hidden="true">3</span>
+          <div><h2 id="h-rules">Three kinds of images</h2><p>The right alt text depends on why the image is there.</p></div>
+        </div>
+        <div class="kinds">
+          <div class="kind">
+            <div class="icon" aria-hidden="true">&#128444;</div>
+            <h3>Informative</h3>
+            <p>Describe the content: <code>alt="Red-roofed house beside a tree on a sunny day"</code></p>
+          </div>
+          <div class="kind">
+            <div class="icon" aria-hidden="true">&#128269;</div>
+            <h3>Functional</h3>
+            <p>Describe the action, not the picture: a magnifying-glass button gets <code>alt="Search"</code>.</p>
+          </div>
+          <div class="kind">
+            <div class="icon" aria-hidden="true">&#10024;</div>
+            <h3>Decorative</h3>
+            <p>Use <code>alt=""</code> so screen readers skip it. Leaving <code>alt</code> out makes them read the file name instead.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="learn" aria-labelledby="h-learn">
+        <h2 id="h-learn">What I learned</h2>
+        <ul>
+          <li><strong>WCAG 1.1.1 Non-text Content:</strong> every meaningful image needs a text alternative that serves the same purpose.</li>
+          <li>Good alt text is short (about 125 characters), specific, and never starts with "image of".</li>
+          <li>Charts need their key message in the alt text, such as the trend or the highest value, not just "chart".</li>
+          <li>Inline SVGs get the same treatment through <code>role="img"</code> and a <code>&lt;title&gt;</code>.</li>
+        </ul>
+      </section>
+
+      <nav class="pager" aria-label="Exercises">
+        <a href="keyboard.html"><span>Previous</span><strong>&larr; Keyboard playground</strong></a>
+        <a class="next" href="contrast.html"><span>Next exercise</span><strong>Contrast fixer &rarr;</strong></a>
+      </nav>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner"><span>Made by Asadbek Nosirjonov · ID 202537228</span><span>Web Programming · Week 9</span></div>
+  </footer>
+
+  <script>
+    const IMAGES = {
+      house: {
+        svg: '<svg viewBox="0 0 300 200" role="img" aria-labelledby="t1"><title id="t1">Picture to describe: option 1</title><rect width="300" height="200" fill="#cdeff6"/><circle cx="245" cy="45" r="24" fill="#f59e0b"/><rect y="148" width="300" height="52" fill="#86c98a"/><rect x="55" y="90" width="95" height="62" fill="#fff" stroke="#0f172a" stroke-width="3"/><polygon points="47,92 102,50 158,92" fill="#b91c1c" stroke="#0f172a" stroke-width="3"/><rect x="92" y="118" width="22" height="34" fill="#4338ca"/><rect x="194" y="112" width="10" height="40" fill="#78350f"/><circle cx="199" cy="98" r="26" fill="#15803d"/></svg>',
+        must: ['house', 'home', 'building', 'cottage'],
+        details: { roof: ['roof', 'red'], tree: ['tree'], sun: ['sun', 'sunny'], grass: ['grass', 'lawn', 'field', 'garden'], door: ['door', 'blue'] },
+        example: 'Small white house with a red roof and a blue door, next to a tree on a sunny day'
+      },
+      chart: {
+        svg: '<svg viewBox="0 0 300 200" role="img" aria-labelledby="t2"><title id="t2">Picture to describe: option 2</title><rect width="300" height="200" fill="#fff"/><line x1="40" y1="170" x2="280" y2="170" stroke="#0f172a" stroke-width="2"/><line x1="40" y1="20" x2="40" y2="170" stroke="#0f172a" stroke-width="2"/><rect x="60" y="120" width="34" height="50" fill="#a5b4fc"/><rect x="110" y="95" width="34" height="75" fill="#818cf8"/><rect x="160" y="70" width="34" height="100" fill="#6366f1"/><rect x="210" y="35" width="34" height="135" fill="#4338ca"/><text x="77" y="188" font-size="12" text-anchor="middle" fill="#0f172a">Mon</text><text x="127" y="188" font-size="12" text-anchor="middle" fill="#0f172a">Tue</text><text x="177" y="188" font-size="12" text-anchor="middle" fill="#0f172a">Wed</text><text x="227" y="188" font-size="12" text-anchor="middle" fill="#0f172a">Thu</text></svg>',
+        must: ['chart', 'graph', 'bar'],
+        details: { trend: ['increase', 'increas', 'grow', 'rise', 'rising', 'up', 'higher'], days: ['monday', 'thursday', 'mon', 'thu', 'day', 'week'], highest: ['highest', 'most', 'peak', 'thursday'] },
+        example: 'Bar chart: visits rise every day from Monday to Thursday, with Thursday the highest'
+      },
+      bike: {
+        svg: '<svg viewBox="0 0 300 200" role="img" aria-labelledby="t3"><title id="t3">Picture to describe: option 3</title><rect width="300" height="200" fill="#fef3c7"/><rect y="160" width="300" height="40" fill="#94a3b8"/><circle cx="90" cy="130" r="36" fill="none" stroke="#0f172a" stroke-width="6"/><circle cx="210" cy="130" r="36" fill="none" stroke="#0f172a" stroke-width="6"/><polyline points="90,130 135,80 185,80 210,130" fill="none" stroke="#0e7490" stroke-width="7"/><polyline points="135,80 150,130 90,130" fill="none" stroke="#0e7490" stroke-width="7"/><line x1="150" y1="130" x2="185" y2="80" stroke="#0e7490" stroke-width="7"/><line x1="185" y1="80" x2="195" y2="58" stroke="#0f172a" stroke-width="6"/><line x1="183" y1="58" x2="208" y2="58" stroke="#0f172a" stroke-width="6"/><line x1="128" y1="68" x2="148" y2="68" stroke="#0f172a" stroke-width="7"/></svg>',
+        must: ['bike', 'bicycle', 'cycle'],
+        details: { colour: ['teal', 'blue', 'green', 'turquoise', 'cyan'], road: ['road', 'street', 'ground', 'parked'], wheels: ['wheel'] },
+        example: 'Teal bicycle standing on a grey road in front of a pale yellow background'
+      }
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const input = $('alt-input');
+    let current = 'house';
+
+    function choose(key) {
+      current = key;
+      $('frame').innerHTML = IMAGES[key].svg;
+      document.querySelectorAll('.picker button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.img === key)));
+      input.value = '';
+      input.dispatchEvent(new Event('input'));
+      reset();
+    }
+    function reset() {
+      $('feedback').replaceChildren();
+      $('grade').textContent = '–';
+      $('grade-word').textContent = 'Press "Rate my alt text" to see how you did.';
+      $('meter').style.width = '0';
+      $('read-aloud').hidden = true;
+    }
+    document.querySelectorAll('.picker button').forEach((b) => b.addEventListener('click', () => choose(b.dataset.img)));
+
+    input.addEventListener('input', () => {
+      const n = input.value.length;
+      $('alt-count').textContent = n + ' / 125';
+      $('alt-count').className = n > 125 ? 'over' : '';
+    });
+
+    function item(pass, text) {
+      const li = document.createElement('li');
+      const badge = document.createElement('span');
+      badge.className = 'badge ' + (pass ? 'pass' : 'fail');
+      badge.textContent = pass ? 'Good' : 'Fix';
+      const span = document.createElement('span');
+      span.textContent = text;
+      li.append(badge, span);
+      return li;
+    }
+
+    $('rate').addEventListener('click', () => {
+      const img = IMAGES[current];
+      const text = input.value.trim();
+      const lower = text.toLowerCase();
+      const rows = [];
+      let points = 0;
+
+      if (!text) {
+        $('feedback').replaceChildren(item(false, 'The alt text is empty. This image carries information, so it needs a description.'));
+        $('grade').textContent = '0 / 5';
+        $('grade-word').textContent = 'Nothing to rate yet.';
+        $('meter').style.width = '0';
+        input.focus();
+        return;
+      }
+
+      const redundant = /^(an? )?(image|picture|photo|graphic|icon) (of|showing)/.test(lower);
+      rows.push(item(!redundant, redundant ? 'Drop "image of". The screen reader already says it is an image.' : 'No redundant "image of" at the start.'));
+      if (!redundant) points++;
+
+      const okLength = text.length >= 15 && text.length <= 125;
+      rows.push(item(okLength, okLength ? 'Good length (' + text.length + ' characters).' : text.length < 15 ? 'Too short to be useful. Add a little more detail.' : 'Over 125 characters. Keep it short and put long details in the page text.'));
+      if (okLength) points++;
+
+      const mainOk = img.must.some((w) => lower.includes(w));
+      rows.push(item(mainOk, mainOk ? 'You named the main subject.' : 'Say what the picture mainly shows (the main subject).'));
+      if (mainOk) points++;
+
+      const found = Object.keys(img.details).filter((k) => img.details[k].some((w) => lower.includes(w)));
+      const detailOk = found.length >= 2;
+      rows.push(item(detailOk, detailOk ? 'Nice detail: you covered ' + found.join(', ') + '.' : 'Add one or two supporting details (for example ' + Object.keys(img.details).join(', ') + ').'));
+      if (detailOk) points++;
+
+      const fileName = /\.(png|jpe?g|gif|svg|webp)\b/.test(lower) || /^(img|dsc)[_-]?\d/.test(lower);
+      rows.push(item(!fileName, fileName ? 'That looks like a file name. Describe the picture instead.' : 'Written as a description, not a file name.'));
+      if (!fileName) points++;
+
+      $('feedback').replaceChildren(...rows);
+      $('grade').textContent = points + ' / 5';
+      $('grade-word').textContent = points === 5 ? 'Excellent alt text!' : points >= 3 ? 'Good start. Fix the red items.' : 'Needs work. Follow the tips below.';
+      $('meter').style.width = (points * 20) + '%';
+      $('meter').style.background = points === 5 ? 'var(--ok)' : points >= 3 ? 'var(--primary)' : 'var(--bad)';
+      $('spoken').textContent = '"' + text + ', image"';
+      $('read-aloud').hidden = false;
+    });
+
+    $('sample').addEventListener('click', () => {
+      input.value = IMAGES[current].example;
+      input.dispatchEvent(new Event('input'));
+      input.focus();
+    });
+
+    choose('house');
+  </script>
+</body>
+</html>

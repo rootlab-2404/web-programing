@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Week 9 web accessibility lab by Asadbek Nosirjonov: keyboard, alt text, contrast, accessible forms and a Lighthouse audit.">
+  <title>Access Lab · Week 9 | Asadbek Nosirjonov</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html"><span class="logo" aria-hidden="true">A</span><span>Access Lab<small>Week 9 · Web accessibility</small></span></a>
+      <nav class="site-nav" aria-label="Week 9 pages">
+        <ul>
+          <li><a href="../../index.html">All weeks</a></li>
+          <li><a href="index.html" aria-current="page">Lab home</a></li>
+          <li><a href="keyboard.html">Keyboard</a></li>
+          <li><a href="alt.html">Alt text</a></li>
+          <li><a href="contrast.html">Contrast</a></li>
+          <li><a href="registration-asadbek.html">Sign-up</a></li>
+          <li><a href="audit.html">Site audit</a></li>
+          <li><a href="../week 9-2/index.html">9-2 Audit</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="inner">
+        <span class="eyebrow">Week 9 · Web accessibility</span>
+        <h1 id="page-title">Try it. See it. <span class="hl">Fix it.</span></h1>
+        <p class="lead">Six small, hands-on pages about making the web usable for everyone. Each one lets you do something and shows the result straight away, then explains which WCAG rule it is about.</p>
+        <div class="meta">
+          <span class="chip">Asadbek Nosirjonov</span>
+          <span class="chip">ID 202537228</span>
+          <span class="chip">WCAG 2.1 AA</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="content">
+      <ol class="tasks">
+        <li>
+          <a class="task" href="keyboard.html">
+            <span class="num" aria-hidden="true">1</span>
+            <strong>Keyboard playground</strong>
+            <span class="desc">A switch, a disclosure panel and a live log of every key press and focus change.</span>
+            <span class="tags"><span class="chip">2.1.1 Keyboard</span><span class="chip">4.1.2 Name, Role, Value</span></span>
+            <span class="go" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="task" href="alt.html">
+            <span class="num" aria-hidden="true">2</span>
+            <strong>Alt text workshop</strong>
+            <span class="desc">Describe an image in your own words and get your alt text rated on five rules.</span>
+            <span class="tags"><span class="chip">1.1.1 Non-text Content</span></span>
+            <span class="go" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="task" href="contrast.html">
+            <span class="num" aria-hidden="true">3</span>
+            <strong>Contrast fixer</strong>
+            <span class="desc">Measure any colour pair, see if it passes AA and AAA, and let the page fix it for you.</span>
+            <span class="tags"><span class="chip">1.4.3 Contrast</span><span class="chip">1.4.11 Non-text Contrast</span></span>
+            <span class="go" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="task" href="registration-asadbek.html">
+            <span class="num" aria-hidden="true">4</span>
+            <strong>Accessible sign-up form</strong>
+            <span class="desc">The Week 8 form rebuilt with labels, live validation, ARIA states and a password meter.</span>
+            <span class="tags"><span class="chip">3.3.1 Error Identification</span><span class="chip">3.3.2 Labels</span></span>
+            <span class="go" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="task" href="audit.html">
+            <span class="num" aria-hidden="true">5</span>
+            <strong>Access Lab self-audit</strong>
+            <span class="desc">Every colour on these pages, measured. Plus a score tracker and a manual checklist.</span>
+            <span class="tags"><span class="chip">1.4.3 Contrast</span><span class="chip">Manual testing</span></span>
+            <span class="go" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+        <li>
+          <a class="task featured" href="../week 9-2/index.html">
+            <span class="num" aria-hidden="true">6</span>
+            <strong>Week 9-2: Portfolio Lighthouse audit</strong>
+            <span class="desc">I ran Lighthouse on my whole assignment site: 96 before, every issue fixed, with before and after code.</span>
+            <span class="tags"><span class="chip">Lighthouse</span><span class="chip">Landmarks</span><span class="chip">Before / after</span></span>
+            <span class="go" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      </ol>
+
+      <section class="learn" aria-labelledby="h-learn" style="margin-top:32px">
+        <h2 id="h-learn">What every page here does</h2>
+        <ul>
+          <li>Starts with a <strong>skip link</strong> and uses <code>header</code>, <code>nav</code>, <code>main</code> and <code>footer</code> landmarks.</li>
+          <li>Has exactly one <code>h1</code>, and headings that never skip a level.</li>
+          <li>Shows a thick, high-contrast <strong>focus outline</strong> on every link, button and field.</li>
+          <li>Uses colours that all pass WCAG AA. The numbers are on the <a href="audit.html">self-audit page</a>.</li>
+          <li>Turns off animation for people who set <code>prefers-reduced-motion</code>.</li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner"><span>Made by Asadbek Nosirjonov · ID 202537228</span><span>Web Programming · Week 9</span></div>
+  </footer>
+</body>
+</html>

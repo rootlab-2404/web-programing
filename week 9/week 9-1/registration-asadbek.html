@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accessible Sign-up Form · Access Lab | Asadbek Nosirjonov</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .signup { display: grid; grid-template-columns: 300px 1fr; overflow: hidden; padding: 0; }
+    .side {
+      position: relative; overflow: hidden; padding: 32px 26px; color: #e0e7ff;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(34, 211, 238, .16), transparent 50%),
+        linear-gradient(165deg, var(--hero-2), var(--hero-1));
+      display: flex; flex-direction: column; gap: 26px;
+    }
+    .avatar {
+      width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center;
+      background: linear-gradient(135deg, #a5b4fc, #67e8f9); color: var(--hero-1); font-size: 1.4rem; font-weight: 900;
+    }
+    .side .who { font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0; line-height: 1.2; }
+    .side .sid { display: inline-block; margin-top: 8px; padding: 3px 12px; border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); font-family: var(--mono); font-size: .82rem; color: #fff; }
+    .side h2 { font-size: .78rem; letter-spacing: .16em; text-transform: uppercase; color: #a5f3fc; margin: 0 0 12px; }
+    .checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: .95rem; }
+    .checks li { display: flex; align-items: center; gap: 12px; color: #e0e7ff; transition: color .2s, transform .2s; }
+    .checks li::before {
+      content: ""; flex: none; width: 22px; height: 22px; border-radius: 50%;
+      border: 2px solid #a5b4fc; display: grid; place-items: center; font-size: .75rem; font-weight: 900;
+    }
+    .checks li.ok { color: #fff; transform: translateX(3px); }
+    .checks li.ok::before { content: "\2713"; background: #67e8f9; border-color: #67e8f9; color: var(--hero-1); }
+    .progress-txt { font-size: .9rem; color: #e0e7ff; margin: 10px 0 0; }
+
+    .form-side { padding: 32px 36px; }
+    fieldset { border: 0; padding: 0; margin: 0 0 22px; min-width: 0; }
+    legend { font-size: 1.25rem; font-weight: 800; letter-spacing: -.01em; padding: 0; margin-bottom: 2px; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+    .req { color: var(--bad); }
+    .hint { display: block; color: var(--muted); font-size: .86rem; margin-top: 5px; }
+    .err { display: block; color: var(--bad); font-size: .86rem; font-weight: 700; min-height: 1.3em; margin-top: 5px; }
+    input[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(--bad); background: #fff7f7; }
+    input[aria-invalid="false"], select[aria-invalid="false"] { border-color: #16a34a; }
+    .meter { height: 8px; background: var(--line); border-radius: 999px; margin-top: 8px; overflow: hidden; }
+    .meter span { display: block; height: 100%; width: 0; border-radius: 999px; transition: width .3s, background .3s; }
+    .show { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; margin: 4px 0 0; cursor: pointer; }
+    .show input { width: 18px; height: 18px; accent-color: var(--primary); }
+    .controls { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+    .success { margin-top: 20px; padding: 16px 18px; border-radius: var(--radius-sm); background: var(--ok-soft); border: 1px solid #86efac; color: #14532d; font-weight: 600; }
+    .success[hidden] { display: none; }
+    .notes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .note { padding: 16px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); }
+    .note p { margin: 4px 0 0; font-size: .95rem; }
+    @media (max-width: 860px) {
+      .signup { grid-template-columns: 1fr; }
+      .two, .notes { grid-template-columns: 1fr; }
+      .form-side { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html"><span class="logo" aria-hidden="true">A</span><span>Access Lab<small>Week 9 · Web accessibility</small></span></a>
+      <nav class="site-nav" aria-label="Week 9 pages">
+        <ul>
+          <li><a href="../../index.html">All weeks</a></li>
+          <li><a href="index.html">Lab home</a></li>
+          <li><a href="keyboard.html">Keyboard</a></li>
+          <li><a href="alt.html">Alt text</a></li>
+          <li><a href="contrast.html">Contrast</a></li>
+          <li><a href="registration-asadbek.html" aria-current="page">Sign-up</a></li>
+          <li><a href="audit.html">Site audit</a></li>
+          <li><a href="../week 9-2/index.html">9-2 Audit</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="inner">
+        <span class="eyebrow">Exercise 4 of 5</span>
+        <h1 id="page-title">Accessible <span class="hl">sign-up form</span></h1>
+        <p class="lead">My Week 8 registration form, rebuilt so it works for everyone. Every field has a visible label, errors are announced as you type, and the button only unlocks when everything is valid.</p>
+      </div>
+    </section>
+
+    <div class="content">
+      <section class="card signup" aria-label="Student sign-up form">
+        <div class="side">
+          <div>
+            <div class="avatar" aria-hidden="true">AN</div>
+          </div>
+          <div>
+            <p class="who">Asadbek Nosirjonov</p>
+            <span class="sid">ID: 202537228</span>
+          </div>
+          <div>
+            <h2>Checklist</h2>
+            <ul class="checks">
+              <li id="c-name">Name entered</li>
+              <li id="c-sid">9-digit student ID</li>
+              <li id="c-email">Valid email</li>
+              <li id="c-major">Major chosen</li>
+              <li id="c-pw">Strong password</li>
+              <li id="c-pw2">Passwords match</li>
+            </ul>
+            <p class="progress-txt" id="progress-txt" aria-live="polite">0 of 6 done</p>
+          </div>
+        </div>
+
+        <div class="form-side">
+          <p class="small muted" style="margin:0 0 10px">Fields marked <span class="req" aria-hidden="true">*</span><span class="sr-only">with a star</span> are required.</p>
+          <form id="regForm" action="#" method="post" novalidate>
+            <fieldset>
+              <legend>Student info</legend>
+
+              <label for="sname">Full name <span class="req" aria-hidden="true">*</span></label>
+              <input type="text" id="sname" name="sname" placeholder="e.g. Asadbek Nosirjonov" required minlength="2" maxlength="50" autocomplete="name" aria-describedby="err-sname">
+              <span class="err" id="err-sname" role="alert"></span>
+
+              <div class="two">
+                <div>
+                  <label for="sid">Student ID <span class="req" aria-hidden="true">*</span></label>
+                  <input type="text" id="sid" name="sid" placeholder="e.g. 202537228" required inputmode="numeric" maxlength="9" aria-describedby="hint-sid err-sid">
+                  <span class="hint" id="hint-sid">Exactly 9 digits</span>
+                  <span class="err" id="err-sid" role="alert"></span>
+                </div>
+                <div>
+                  <label for="major">Major <span class="req" aria-hidden="true">*</span></label>
+                  <select id="major" name="major" required aria-describedby="err-major">
+                    <option value="" disabled selected>Choose…</option>
+                    <option>Computer Engineering</option>
+                    <option>Computer Science</option>
+                    <option>Software Engineering</option>
+                    <option>Electronics</option>
+                    <option>Business</option>
+                    <option>Other</option>
+                  </select>
+                  <span class="err" id="err-major" role="alert"></span>
+                </div>
+              </div>
+
+              <label for="semail">University email <span class="req" aria-hidden="true">*</span></label>
+              <input type="email" id="semail" name="semail" placeholder="name@gachon.ac.kr" required autocomplete="email" aria-describedby="err-semail">
+              <span class="err" id="err-semail" role="alert"></span>
+            </fieldset>
+
+            <fieldset>
+              <legend>Account</legend>
+              <div class="two">
+                <div>
+                  <label for="pw">Password <span class="req" aria-hidden="true">*</span></label>
+                  <input type="password" id="pw" name="pw" required minlength="8" autocomplete="new-password" aria-describedby="hint-pw err-pw">
+                  <div class="meter" aria-hidden="true"><span id="meter-bar"></span></div>
+                  <span class="hint" id="hint-pw">8+ characters, with a letter and a number</span>
+                  <span class="err" id="err-pw" role="alert"></span>
+                </div>
+                <div>
+                  <label for="pw2">Confirm password <span class="req" aria-hidden="true">*</span></label>
+                  <input type="password" id="pw2" name="pw2" required autocomplete="new-password" aria-describedby="err-pw2">
+                  <span class="err" id="err-pw2" role="alert"></span>
+                </div>
+              </div>
+              <label class="show"><input type="checkbox" id="show-pw"> Show passwords</label>
+            </fieldset>
+
+            <div class="controls">
+              <button type="submit" id="submit-btn" disabled>Create account</button>
+              <button type="reset" class="alt">Reset</button>
+            </div>
+          </form>
+
+          <div id="success" class="success" role="status" hidden></div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="h-how">
+        <h2 id="h-how">What makes this form accessible</h2>
+        <div class="notes">
+          <div class="note"><h3>Real labels</h3><p>Every input has a <code>&lt;label for&gt;</code>, so clicking the label focuses the field and screen readers read it. Placeholders are only examples.</p></div>
+          <div class="note"><h3>Clear errors</h3><p>Errors appear in text next to the field (not only red borders), are linked with <code>aria-describedby</code>, and set <code>aria-invalid</code>.</p></div>
+          <div class="note"><h3>Helpful input</h3><p><code>autocomplete</code>, <code>inputmode="numeric"</code> and a show-password option make typing easier for everyone.</p></div>
+        </div>
+      </section>
+
+      <section class="learn" aria-labelledby="h-learn">
+        <h2 id="h-learn">What I learned</h2>
+        <ul>
+          <li><strong>WCAG 1.3.1 Info and Relationships:</strong> <code>fieldset</code> and <code>legend</code> group related fields.</li>
+          <li><strong>WCAG 3.3.1 Error Identification:</strong> say in text what is wrong, and where.</li>
+          <li><strong>WCAG 3.3.2 Labels or Instructions:</strong> show the rules (such as "exactly 9 digits") before the user makes a mistake.</li>
+          <li><strong>WCAG 1.3.5 Identify Input Purpose:</strong> <code>autocomplete="name"</code> and <code>"email"</code> let browsers fill fields in.</li>
+          <li>On submit, focus moves to the first invalid field, so keyboard users don't get lost.</li>
+        </ul>
+      </section>
+
+      <nav class="pager" aria-label="Exercises">
+        <a href="contrast.html"><span>Previous</span><strong>&larr; Contrast fixer</strong></a>
+        <a class="next" href="audit.html"><span>Next exercise</span><strong>Access Lab self-audit &rarr;</strong></a>
+      </nav>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner"><span>Made by Asadbek Nosirjonov · ID 202537228</span><span>Web Programming · Week 9</span></div>
+  </footer>
+
+  <script>
+    const form = document.getElementById('regForm');
+    const submitBtn = document.getElementById('submit-btn');
+    const success = document.getElementById('success');
+    const meterBar = document.getElementById('meter-bar');
+    const $ = (id) => document.getElementById(id);
+
+    function markValid(input, span) {
+      input.setAttribute('aria-invalid', 'false');
+      span.textContent = '';
+    }
+    function markInvalid(input, span, msg) {
+      input.setAttribute('aria-invalid', 'true');
+      span.textContent = msg;
+    }
+
+    const nameRe = /^[A-Za-z' \-]+$/;
+    const hasLetterAndNumber = (v) => /[A-Za-z]/.test(v) && /\d/.test(v);
+
+    function validateName() {
+      const el = $('sname'), err = $('err-sname');
+      if (el.validity.valueMissing) return markInvalid(el, err, 'Full name is required'), false;
+      if (el.validity.tooShort) return markInvalid(el, err, 'Name must be at least 2 characters'), false;
+      if (!nameRe.test(el.value.trim())) return markInvalid(el, err, 'Use letters, spaces, apostrophes or hyphens only'), false;
+      return markValid(el, err), true;
+    }
+
+    function validateSid() {
+      const el = $('sid'), err = $('err-sid');
+      if (el.validity.valueMissing) return markInvalid(el, err, 'Student ID is required'), false;
+      if (!/^\d{9}$/.test(el.value)) return markInvalid(el, err, 'Must be exactly 9 digits'), false;
+      return markValid(el, err), true;
+    }
+
+    function validateEmail() {
+      const el = $('semail'), err = $('err-semail');
+      if (el.validity.valueMissing) return markInvalid(el, err, 'Email is required'), false;
+      if (el.validity.typeMismatch) return markInvalid(el, err, 'Enter a valid email, like name@gachon.ac.kr'), false;
+      return markValid(el, err), true;
+    }
+
+    function validateMajor() {
+      const el = $('major'), err = $('err-major');
+      if (el.validity.valueMissing) return markInvalid(el, err, 'Please choose a major'), false;
+      return markValid(el, err), true;
+    }
+
+    function passwordScore(v) {
+      let s = 0;
+      if (v.length >= 8) s++;
+      if (v.length >= 12) s++;
+      if (hasLetterAndNumber(v)) s++;
+      if (/[^A-Za-z0-9]/.test(v)) s++;
+      return s; // 0..4
+    }
+
+    function updateMeter() {
+      const s = passwordScore($('pw').value);
+      const colors = ['#dc2626', '#dc2626', '#f59e0b', '#4338ca', '#16a34a'];
+      meterBar.style.width = (s * 25) + '%';
+      meterBar.style.background = colors[s];
+    }
+
+    function validatePassword() {
+      const el = $('pw'), err = $('err-pw');
+      const v = el.value;
+      el.setCustomValidity(v && !hasLetterAndNumber(v) ? 'Needs a letter and a number' : '');
+      if (el.validity.valueMissing) return markInvalid(el, err, 'Password is required'), false;
+      if (el.validity.tooShort) return markInvalid(el, err, 'At least 8 characters'), false;
+      if (el.validity.customError) return markInvalid(el, err, 'Needs a letter and a number'), false;
+      return markValid(el, err), true;
+    }
+
+    function validateConfirm() {
+      const el = $('pw2'), err = $('err-pw2');
+      el.setCustomValidity(el.value !== $('pw').value ? 'Passwords do not match' : '');
+      if (el.validity.valueMissing) return markInvalid(el, err, 'Please confirm your password'), false;
+      if (el.validity.customError) return markInvalid(el, err, el.validationMessage), false;
+      return markValid(el, err), true;
+    }
+
+    const validators = { sname: validateName, sid: validateSid, semail: validateEmail, major: validateMajor, pw: validatePassword, pw2: validateConfirm };
+    const validateAll = () => Object.values(validators).map((v) => v()).every(Boolean);
+
+    // Live checklist in the side panel
+    function updateChecklist() {
+      const pw = $('pw').value;
+      const state = {
+        'c-name': $('sname').value.trim().length >= 2 && nameRe.test($('sname').value.trim()),
+        'c-sid': /^\d{9}$/.test($('sid').value),
+        'c-email': $('semail').value !== '' && $('semail').validity.valid,
+        'c-major': $('major').value !== '',
+        'c-pw': pw.length >= 8 && hasLetterAndNumber(pw),
+        'c-pw2': $('pw2').value !== '' && $('pw2').value === pw
+      };
+      Object.entries(state).forEach(([id, ok]) => $(id).classList.toggle('ok', ok));
+      const done = Object.values(state).filter(Boolean).length;
+      $('progress-txt').textContent = done + ' of 6 done';
+    }
+
+    function updateButton() {
+      const sid = $('sid');
+      sid.setCustomValidity(/^\d{9}$/.test(sid.value) || sid.value === '' ? '' : 'Must be exactly 9 digits');
+      $('pw2').setCustomValidity($('pw2').value !== $('pw').value ? 'Passwords do not match' : '');
+      const pw = $('pw').value;
+      $('pw').setCustomValidity(pw && !hasLetterAndNumber(pw) ? 'Needs a letter and a number' : '');
+      const nameOk = nameRe.test($('sname').value.trim());
+      submitBtn.disabled = !(form.checkValidity() && nameOk);
+      updateChecklist();
+    }
+
+    Object.entries(validators).forEach(([id, validate]) => {
+      const evt = id === 'major' ? 'change' : 'input';
+      $(id).addEventListener(evt, () => {
+        validate();
+        if (id === 'pw') {
+          updateMeter();
+          if ($('pw2').value) validateConfirm();
+        }
+        updateButton();
+      });
+    });
+
+    $('show-pw').addEventListener('change', (e) => {
+      const type = e.target.checked ? 'text' : 'password';
+      $('pw').type = type;
+      $('pw2').type = type;
+    });
+
+    // Final gate: never trust the disabled button alone
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      updateButton();
+      if (!validateAll()) {
+        success.hidden = true;
+        const bad = form.querySelector('[aria-invalid="true"]');
+        if (bad) bad.focus();
+        return;
+      }
+      const name = $('sname').value.trim();
+      const major = $('major').value;
+      form.reset();
+      success.textContent = 'Welcome, ' + name + '! Your ' + major + ' account was created (demo only, nothing is sent).';
+      success.hidden = false;
+    });
+
+    form.addEventListener('reset', () => {
+      success.hidden = true;
+      $('pw').type = 'password';
+      $('pw2').type = 'password';
+      form.querySelectorAll('input, select').forEach((el) => { el.removeAttribute('aria-invalid'); el.setCustomValidity(''); });
+      form.querySelectorAll('.err').forEach((s) => { s.textContent = ''; });
+      setTimeout(() => { updateMeter(); updateButton(); });
+    });
+
+    updateMeter();
+    updateButton();
+  </script>
+</body>
+</html>

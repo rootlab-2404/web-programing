@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keyboard Playground · Access Lab | Asadbek Nosirjonov</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .keys { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    kbd {
+      display: inline-block; min-width: 2.2em; text-align: center; padding: 3px 9px;
+      font-family: var(--mono); font-size: .85rem; font-weight: 700; color: #fff;
+      background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .35); border-bottom-width: 3px; border-radius: 8px;
+    }
+    .card kbd { color: var(--ink); background: var(--surface-2); border-color: #cbd5e1; }
+
+    .switch {
+      display: inline-flex; align-items: center; gap: 14px; padding: 8px 18px 8px 8px;
+      background: var(--surface); color: var(--ink); border: 1.5px solid #cbd5e1; border-radius: 999px;
+    }
+    .switch:hover { background: var(--surface-2); color: var(--ink); border-color: #94a3b8; }
+    .switch .track { width: 56px; height: 32px; border-radius: 999px; background: #94a3b8; position: relative; transition: background .2s; }
+    .switch .thumb { position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .2s; }
+    .switch[aria-checked="true"] .track { background: var(--primary); }
+    .switch[aria-checked="true"] .thumb { transform: translateX(24px); }
+
+    .demo-area { margin-top: 16px; padding: 18px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2); transition: background .25s, color .25s; }
+    .demo-area.dark { background: #0f172a; color: #e2e8f0; border-color: #334155; }
+    .demo-area.dark code { background: #1e293b; color: #c7d2fe; }
+
+    .panel { margin-top: 14px; padding: 16px 18px; background: var(--primary-soft); border: 1px solid #c7d2fe; border-radius: var(--radius-sm); }
+    .panel[hidden] { display: none; }
+    .chev { display: inline-block; transition: transform .2s; }
+    [aria-expanded="true"] .chev { transform: rotate(180deg); }
+
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 14px; }
+    .compare > div { padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--line); }
+    .fake-btn { display: inline-block; padding: 9px 18px; border-radius: var(--radius-sm); background: #64748b; color: #fff; font-weight: 700; cursor: pointer; user-select: none; }
+    .result { min-height: 1.6em; margin: 10px 0 0; font-weight: 700; }
+
+    #log {
+      height: 240px; overflow: auto; margin: 14px 0 0; padding: 12px 14px;
+      background: #0f172a; color: #e2e8f0; border-radius: var(--radius-sm);
+      font-family: var(--mono); font-size: .86rem; line-height: 1.55;
+    }
+    #log div { border-bottom: 1px dashed #334155; padding: 3px 0; }
+    #log .focus { color: #fcd34d; }
+    #log .empty { color: #94a3b8; border: 0; }
+    .stats { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+    .stat { padding: 8px 14px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); font-weight: 700; }
+    .stat span { color: var(--primary); }
+    @media (max-width: 640px) { .compare { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html"><span class="logo" aria-hidden="true">A</span><span>Access Lab<small>Week 9 · Web accessibility</small></span></a>
+      <nav class="site-nav" aria-label="Week 9 pages">
+        <ul>
+          <li><a href="../../index.html">All weeks</a></li>
+          <li><a href="index.html">Lab home</a></li>
+          <li><a href="keyboard.html" aria-current="page">Keyboard</a></li>
+          <li><a href="alt.html">Alt text</a></li>
+          <li><a href="contrast.html">Contrast</a></li>
+          <li><a href="registration-asadbek.html">Sign-up</a></li>
+          <li><a href="audit.html">Site audit</a></li>
+          <li><a href="../week 9-2/index.html">9-2 Audit</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="inner">
+        <span class="eyebrow">Exercise 1 of 5</span>
+        <h1 id="page-title">Keyboard <span class="hl">playground</span></h1>
+        <p class="lead">Put your mouse away. Everything on this page works with the keyboard alone, because some people can't use a mouse at all.</p>
+        <div class="keys" aria-label="Keys to try">
+          <kbd>Tab</kbd><kbd>Shift</kbd><kbd>Enter</kbd><kbd>Space</kbd><kbd>Esc</kbd>
+        </div>
+      </div>
+    </section>
+
+    <div class="content">
+      <section class="card" aria-labelledby="h-switch">
+        <div class="card-head">
+          <span class="step" aria-hidden="true">1</span>
+          <div><h2 id="h-switch">A switch</h2><p>A real <code>button</code> with <code>role="switch"</code> and <code>aria-checked</code>.</p></div>
+        </div>
+        <p>Tab to it and press <kbd>Space</kbd> or <kbd>Enter</kbd>. A screen reader announces "Dark preview, switch, on" or "off".</p>
+        <button type="button" id="sw" class="switch" role="switch" aria-checked="false">
+          <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+          <span>Dark preview: <strong id="sw-state">off</strong></span>
+        </button>
+        <div class="demo-area" id="demo-area">
+          <strong>Preview box.</strong> The switch changes this box between light and dark. State lives in <code>aria-checked</code>, so the look and the announcement always match.
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="h-disc">
+        <div class="card-head">
+          <span class="step" aria-hidden="true">2</span>
+          <div><h2 id="h-disc">A disclosure</h2><p>A button controls a region, and <code>aria-expanded</code> tells assistive tech whether it is open.</p></div>
+        </div>
+        <button type="button" id="disc" aria-expanded="false" aria-controls="disc-panel">
+          <span id="disc-label">Show details</span> <span class="chev" aria-hidden="true">&#9662;</span>
+        </button>
+        <div class="panel" id="disc-panel" hidden>
+          <p><strong>Why a real button?</strong> It gets focus, <kbd>Enter</kbd> and <kbd>Space</kbd> handling, and the right role for free. Press <kbd>Esc</kbd> to close this panel and return focus to the button.</p>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="h-compare">
+        <div class="card-head">
+          <span class="step" aria-hidden="true">3</span>
+          <div><h2 id="h-compare">Button vs. clickable div</h2><p>Try reaching both with <kbd>Tab</kbd>. Only one of them works.</p></div>
+        </div>
+        <div class="compare">
+          <div>
+            <span class="badge fail">Inaccessible</span>
+            <p class="small muted" style="margin-top:8px"><code>&lt;div onclick&gt;</code>: no focus, no keyboard, no role.</p>
+            <div class="fake-btn" id="fake">Order pizza</div>
+            <p class="result" id="fake-result" aria-live="polite"></p>
+          </div>
+          <div>
+            <span class="badge pass">Accessible</span>
+            <p class="small muted" style="margin-top:8px"><code>&lt;button&gt;</code>: works with mouse, keyboard and screen readers.</p>
+            <button type="button" id="real">Order pizza</button>
+            <p class="result" id="real-result" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="h-log">
+        <div class="card-head">
+          <span class="step" aria-hidden="true">4</span>
+          <div><h2 id="h-log">Live log</h2><p>Every key you press and every element that receives focus is written here.</p></div>
+        </div>
+        <label for="sandbox">Type something here</label>
+        <input type="text" id="sandbox" autocomplete="off">
+        <div class="stats" aria-live="off">
+          <div class="stat">Keys pressed: <span id="n-keys">0</span></div>
+          <div class="stat">Focus moves: <span id="n-focus">0</span></div>
+        </div>
+        <div id="log" role="log" tabindex="0" aria-label="Event log"><div class="empty">Waiting for keys…</div></div>
+        <div class="row" style="margin-top:14px">
+          <button type="button" id="clear" class="alt">Clear log</button>
+        </div>
+      </section>
+
+      <section class="learn" aria-labelledby="h-learn">
+        <h2 id="h-learn">What I learned</h2>
+        <ul>
+          <li><strong>WCAG 2.1.1 Keyboard:</strong> every feature must work without a mouse.</li>
+          <li><strong>WCAG 2.4.7 Focus Visible:</strong> you must always be able to see where focus is. Here it's a thick amber outline.</li>
+          <li><strong>WCAG 4.1.2 Name, Role, Value:</strong> custom controls need the right role and state (<code>role="switch"</code>, <code>aria-checked</code>, <code>aria-expanded</code>).</li>
+          <li>Native HTML elements give you most of this for free. A <code>div</code> gives you nothing.</li>
+        </ul>
+      </section>
+
+      <nav class="pager" aria-label="Exercises">
+        <a href="index.html"><span>Back</span><strong>&larr; Lab home</strong></a>
+        <a class="next" href="alt.html"><span>Next exercise</span><strong>Alt text workshop &rarr;</strong></a>
+      </nav>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="inner"><span>Made by Asadbek Nosirjonov · ID 202537228</span><span>Web Programming · Week 9</span></div>
+  </footer>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // 1. Switch
+    $('sw').addEventListener('click', () => {
+      const on = $('sw').getAttribute('aria-checked') !== 'true';
+      $('sw').setAttribute('aria-checked', String(on));
+      $('sw-state').textContent = on ? 'on' : 'off';
+      $('demo-area').classList.toggle('dark', on);
+    });
+
+    // 2. Disclosure (Esc closes and returns focus)
+    const disc = $('disc'), panel = $('disc-panel');
+    function setOpen(open) {
+      disc.setAttribute('aria-expanded', String(open));
+      panel.hidden = !open;
+      $('disc-label').textContent = open ? 'Hide details' : 'Show details';
+    }
+    disc.addEventListener('click', () => setOpen(disc.getAttribute('aria-expanded') !== 'true'));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !panel.hidden) { setOpen(false); disc.focus(); }
+    });
+
+    // 3. Div vs button
+    $('fake').addEventListener('click', () => { $('fake-result').textContent = 'Clicked with the mouse. Keyboard users cannot do this.'; });
+    $('real').addEventListener('click', () => { $('real-result').textContent = 'Pizza ordered! Works with mouse and keyboard.'; });
+
+    // 4. Live log
+    const log = $('log');
+    let keys = 0, moves = 0;
+    function write(text, cls) {
+      const empty = log.querySelector('.empty');
+      if (empty) empty.remove();
+      const row = document.createElement('div');
+      if (cls) row.className = cls;
+      row.textContent = new Date().toLocaleTimeString('en-GB') + '  ' + text;
+      log.appendChild(row);
+      log.scrollTop = log.scrollHeight;
+      while (log.children.length > 80) log.removeChild(log.firstChild);
+    }
+    function describe(el) {
+      if (!el || el === document.body) return 'page';
+      const name = el.id ? '#' + el.id : el.tagName.toLowerCase();
+      const label = (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 28);
+      return name + (label ? ' "' + label + '"' : '');
+    }
+    document.addEventListener('keydown', (e) => {
+      if (log.contains(e.target) && e.key.startsWith('Arrow')) return;
+      const keyName = e.key === ' ' ? 'Space' : e.key;
+      write('key: ' + keyName + (e.shiftKey && e.key !== 'Shift' ? ' (+Shift)' : '') + (e.ctrlKey && e.key !== 'Control' ? ' (+Ctrl)' : ''));
+      $('n-keys').textContent = ++keys;
+    });
+    document.addEventListener('focusin', (e) => {
+      if (e.target === log) return;
+      write('focus → ' + describe(e.target), 'focus');
+      $('n-focus').textContent = ++moves;
+    });
+    $('clear').addEventListener('click', () => {
+      log.innerHTML = '<div class="empty">Waiting for keys…</div>';
+      keys = 0; moves = 0; $('n-keys').textContent = 0; $('n-focus').textContent = 0;
+    });
+  </script>
+</body>
+</html>

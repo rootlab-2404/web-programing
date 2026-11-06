@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" width="480" height="300">
+  <rect width="480" height="300" rx="16" fill="#eef2ff"/>
+  <rect x="20" y="18" width="440" height="44" rx="8" fill="#4338ca"/>
+  <text x="240" y="47" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#ffffff" text-anchor="middle">&lt;header&gt;  &lt;nav&gt;</text>
+  <rect x="20" y="74" width="300" height="160" rx="8" fill="#ffffff" stroke="#4338ca" stroke-width="2"/>
+  <text x="170" y="104" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#312e81" text-anchor="middle">&lt;main&gt;</text>
+  <rect x="38" y="118" width="264" height="98" rx="6" fill="#e0e7ff"/>
+  <text x="170" y="150" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#312e81" text-anchor="middle">&lt;article&gt;</text>
+  <text x="170" y="178" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#312e81" text-anchor="middle">&lt;h2&gt;  &lt;figure&gt;  &lt;footer&gt;</text>
+  <rect x="332" y="74" width="128" height="160" rx="8" fill="#ffffff" stroke="#0e7490" stroke-width="2"/>
+  <text x="396" y="160" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#0e7490" text-anchor="middle">&lt;aside&gt;</text>
+  <rect x="20" y="246" width="440" height="36" rx="8" fill="#1e1b4b"/>
+  <text x="240" y="270" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#ffffff" text-anchor="middle">&lt;footer&gt;</text>
+</svg>
