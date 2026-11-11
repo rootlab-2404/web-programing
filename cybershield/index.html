@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CyberShield</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05080f; --bg2:#0a101d; --card:rgba(16,24,42,.66); --card-solid:#101a2e; --card-hi:#15223b;
+  --line:rgba(130,170,255,.12); --line-hi:rgba(130,170,255,.26);
+  --text:#e8eef8; --muted:#8696b0; --dim:#5b6a84;
+  --accent:#2bf0b4; --accent2:#4aa8ff; --accent3:#a07bff; --danger:#ff4d6d; --warn:#ffb340;
+  --glow:0 0 0 1px rgba(43,240,180,.28),0 18px 50px -18px rgba(43,240,180,.45);
+  --radius:18px; --head:"Space Grotesk",Inter,sans-serif; --mono:"JetBrains Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.55;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+   radial-gradient(1000px 600px at 5% -10%,rgba(74,168,255,.16),transparent 60%),
+   radial-gradient(900px 600px at 105% 5%,rgba(43,240,180,.11),transparent 60%),
+   radial-gradient(800px 600px at 50% 120%,rgba(160,123,255,.12),transparent 60%)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(130,170,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(130,170,255,.035) 1px,transparent 1px);
+  background-size:44px 44px;mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%)}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+::selection{background:rgba(43,240,180,.3)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+.mono{font-family:var(--mono)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+
+/* progress + ticker */
+#scrollbar{position:fixed;top:0;left:0;height:2px;width:0;z-index:100;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3))}
+.ticker{position:sticky;top:0;z-index:60;display:flex;align-items:center;height:40px;font-size:13.5px;overflow:hidden;
+  background:rgba(6,10,20,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.ticker-label{flex:none;height:100%;display:flex;align-items:center;gap:8px;padding:0 16px;font:700 11px var(--mono);letter-spacing:.12em;color:#fff;
+  background:linear-gradient(90deg,#ff2e57,#ff5d7a)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 1.2s infinite}
+.ticker-track{flex:1;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent)}
+.ticker-move{display:inline-flex;gap:56px;white-space:nowrap;padding-left:28px;animation:scroll 90s linear infinite}
+.ticker:hover .ticker-move{animation-play-state:paused}
+.ticker-move a{opacity:.85;transition:.2s}
+.ticker-move a:hover{opacity:1;color:var(--accent)}
+.ticker-move a::before{content:"◆ ";color:var(--accent);font-size:10px}
+.ticker-move a.crit::before{color:var(--danger)}
+.ticker-clock{flex:none;padding:0 16px;font:500 12px var(--mono);color:var(--muted);border-left:1px solid var(--line)}
+@keyframes scroll{to{transform:translateX(-50%)}}
+@keyframes pulse{50%{opacity:.25}}
+
+/* nav */
+header{padding:22px 0 0}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:12px;font:700 21px var(--head);letter-spacing:-.02em}
+.logo-ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;position:relative;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:var(--glow)}
+.logo b{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav-links{display:flex;gap:4px;padding:5px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02)}
+.nav-links a{padding:8px 15px;border-radius:10px;color:var(--muted);font-weight:500;font-size:14.5px;transition:.2s;white-space:nowrap}
+.nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,.06)}
+
+/* hero */
+.hero{position:relative;padding:70px 0 40px;text-align:center}
+#particles{position:absolute;inset:0;width:100%;height:100%;z-index:-1;mask-image:radial-gradient(ellipse at center,#000 40%,transparent 75%)}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--line-hi);border-radius:999px;font-size:13px;color:var(--muted);background:rgba(255,255,255,.03);margin-bottom:22px}
+.pill .dot{color:var(--accent)}
+.hero h1{font:700 clamp(34px,6vw,68px)/1.04 var(--head);letter-spacing:-.04em}
+.grad{background:linear-gradient(100deg,var(--accent) 10%,var(--accent2) 50%,var(--accent3) 90%);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200%;animation:shine 6s ease-in-out infinite}
+@keyframes shine{50%{background-position:100%}}
+.hero p.lead{color:var(--muted);max-width:640px;margin:18px auto 0;font-size:17.5px}
+.term{display:inline-flex;margin-top:26px;padding:10px 18px;border:1px solid var(--line);border-radius:12px;font:500 13.5px var(--mono);color:var(--accent);background:rgba(0,0,0,.35);min-width:min(420px,100%);text-align:left}
+.term .p{color:var(--accent2);margin-right:8px}
+.term .cur{display:inline-block;width:8px;background:var(--accent);margin-left:2px;animation:pulse 1s steps(1) infinite}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:44px auto 0;max-width:880px}
+.kpi{padding:18px;text-align:left}
+.kpi b{display:block;font:700 30px var(--head);letter-spacing:-.02em}
+.kpi span{font-size:13px;color:var(--muted)}
+
+/* generic */
+section{padding:44px 0;scroll-margin-top:50px}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+.eyebrow{font:700 12px var(--mono);letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin-bottom:6px}
+.sec-head h2{font:700 32px var(--head);letter-spacing:-.03em}
+.sec-head p{color:var(--muted);font-size:15px;margin-top:4px;max-width:560px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);backdrop-filter:blur(12px);position:relative;transition:transform .25s,border-color .25s,box-shadow .25s}
+.spot::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s;
+  background:radial-gradient(400px circle at var(--mx,50%) var(--my,50%),rgba(74,168,255,.10),transparent 45%)}
+.spot:hover::before{opacity:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line-hi);background:var(--card-solid);color:var(--text);
+  padding:10px 17px;border-radius:12px;font-weight:600;font-size:14.5px;cursor:pointer;transition:.2s;white-space:nowrap}
+.btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),#1fc796);color:#03130d;border-color:transparent;box-shadow:var(--glow)}
+.btn.primary:hover:not(:disabled){color:#03130d;filter:brightness(1.08)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:10px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.loading .ico{animation:rot 1s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s,transform .7s}
+.reveal.in{opacity:1;transform:none}
+
+/* news toolbar */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.search{flex:1;min-width:220px;position:relative}
+.search input{width:100%;padding:11px 14px 11px 40px;border-radius:12px;border:1px solid var(--line-hi);background:var(--card-solid);color:var(--text);font:500 14.5px Inter}
+.search input:focus{outline:none;border-color:var(--accent2);box-shadow:0 0 0 3px rgba(74,168,255,.15)}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%);font:500 11px var(--mono);color:var(--dim);border:1px solid var(--line-hi);border-radius:6px;padding:2px 6px}
+select{padding:11px 14px;border-radius:12px;border:1px solid var(--line-hi);background:var(--card-solid);color:var(--text);font:500 14px Inter;cursor:pointer}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.025);color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.chip:hover{color:var(--text);border-color:var(--line-hi)}
+.chip.on{color:#03130d;background:var(--accent);border-color:var(--accent)}
+.chip .n{font:600 11px var(--mono);opacity:.7}
+.status{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;margin-top:6px}
+.status .dot{color:var(--accent);box-shadow:0 0 10px currentColor}
+.status.off .dot{color:var(--warn)}
+
+/* news cards */
+.featured{display:grid;grid-template-columns:1.35fr 1fr;gap:18px;margin-bottom:18px}
+.news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.news-card{display:flex;flex-direction:column;overflow:hidden}
+.news-card:hover{transform:translateY(-4px);border-color:rgba(43,240,180,.4);box-shadow:var(--glow)}
+.news-card.read{opacity:.62}
+.news-card.read:hover{opacity:1}
+.news-img{aspect-ratio:16/9;overflow:hidden;position:relative;background:#0c1528}
+.big .news-img{aspect-ratio:auto;height:300px}
+.news-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.news-card:hover .news-img img{transform:scale(1.06)}
+.ph{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:16px;
+  background:radial-gradient(circle at 80% 20%,hsla(var(--h),90%,60%,.35),transparent 55%),linear-gradient(135deg,hsl(var(--h),55%,13%),#08101e);}
+.ph::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(135deg,transparent 30%,#000)}
+.ph .ic{font-size:38px;filter:drop-shadow(0 4px 20px hsla(var(--h),90%,60%,.6));position:relative;z-index:1}
+.ph .sn{font:700 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:hsla(var(--h),90%,80%,.85);position:relative;z-index:1}
+.news-body{padding:18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.meta{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.src{color:var(--accent2);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.badge{font:700 10px var(--mono);letter-spacing:.08em;padding:3px 7px;border-radius:6px}
+.badge.new{background:rgba(43,240,180,.15);color:var(--accent)}
+.badge.crit{background:rgba(255,77,109,.16);color:var(--danger);animation:pulse 2s infinite}
+.news-card h3{font:600 17px/1.35 var(--head);letter-spacing:-.01em}
+.big h3{font-size:25px}
+.stretch::after{content:"";position:absolute;inset:0;z-index:1}
+.desc{color:var(--muted);font-size:14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;padding-top:4px}
+.tag{font-size:12px;font-weight:600;color:var(--accent3);background:rgba(160,123,255,.12);padding:3px 9px;border-radius:999px}
+.more{color:var(--accent);font-weight:600;font-size:13.5px}
+.save{position:absolute;top:12px;right:12px;z-index:2;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;cursor:pointer;
+  border:1px solid rgba(255,255,255,.14);background:rgba(5,8,15,.6);backdrop-filter:blur(8px);color:#fff;transition:.2s}
+.save:hover{border-color:var(--accent);color:var(--accent)}
+.save.on{background:var(--accent);color:#03130d;border-color:var(--accent)}
+.side{display:flex;flex-direction:column;gap:12px}
+.side-item{display:flex;gap:14px;padding:16px;align-items:flex-start;flex:1}
+.side-item:hover{border-color:rgba(43,240,180,.4);transform:translateX(4px)}
+.side-item .num{font:700 22px var(--mono);color:var(--accent);opacity:.55;min-width:36px}
+.side-item h4{font:600 15px/1.35 var(--head);margin-top:4px}
+.empty{grid-column:1/-1;text-align:center;padding:50px 20px;color:var(--muted)}
+.empty b{display:block;font-size:40px;margin-bottom:6px}
+.center{text-align:center;margin-top:24px}
+.skel{background:linear-gradient(90deg,#0f182b 25%,#17233b 50%,#0f182b 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:var(--radius);min-height:280px}
+@keyframes sk{to{background-position:-200% 0}}
+
+/* threat pulse */
+.pulse-grid{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:18px}
+.panel{padding:22px}
+.panel h3{font:600 15px var(--head);display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;color:var(--muted)}
+.panel h3 small{font:500 11px var(--mono);color:var(--dim)}
+.gauge{position:relative;text-align:center}
+.gauge svg{width:100%;max-width:260px}
+.gauge .lvl{font:700 30px var(--head);letter-spacing:.02em;margin-top:-34px}
+.gauge p{font-size:13px;color:var(--muted);margin-top:6px}
+.bars{display:grid;gap:11px}
+.bar-row{display:grid;grid-template-columns:minmax(120px,max-content) 1fr 34px;align-items:center;gap:10px;font-size:13px;cursor:pointer}
+.bar-row:hover span:first-child{color:var(--accent)}
+.bar-row span:first-child{white-space:nowrap}
+.bar-row .track{height:8px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+.bar-row .fill{height:100%;border-radius:99px;width:0;transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.bar-row b{font:600 12px var(--mono);text-align:right;color:var(--muted)}
+.radar-box{position:relative;aspect-ratio:1;max-width:300px;margin:0 auto}
+#radar{width:100%;height:100%;cursor:crosshair}
+.tip{position:fixed;z-index:90;pointer-events:none;max-width:280px;padding:10px 12px;border-radius:10px;background:#0f1a2e;border:1px solid var(--line-hi);font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.5);opacity:0;transition:opacity .15s}
+.legend{display:flex;justify-content:center;gap:16px;font-size:12px;color:var(--muted);margin-top:10px}
+.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.keywords{margin-top:18px;padding:18px 22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.keywords > span{font:700 12px var(--mono);color:var(--muted);letter-spacing:.1em;margin-right:6px}
+.kw{font:500 13px var(--mono);padding:5px 11px;border-radius:8px;background:rgba(74,168,255,.08);color:var(--accent2);border:1px solid transparent;cursor:pointer;transition:.2s}
+.kw:hover{border-color:var(--accent2)}
+.kw sup{opacity:.6;margin-left:3px}
+
+/* tools */
+.tools-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:18px}
+.field{position:relative}
+.field input{width:100%;padding:14px 50px 14px 16px;border-radius:12px;border:1px solid var(--line-hi);background:rgba(0,0,0,.3);color:var(--text);font:500 16px var(--mono)}
+.field input:focus{outline:none;border-color:var(--accent)}
+.field button{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;padding:6px;font-size:16px}
+.meter{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:16px 0 10px}
+.meter i{height:7px;border-radius:99px;background:rgba(255,255,255,.07);transition:background .3s}
+.pw-sum{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.pw-sum b{font:700 20px var(--head)}
+.pw-sum span{font-size:13px;color:var(--muted)}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0;font-size:13.5px}
+.checks li{list-style:none;color:var(--dim);display:flex;gap:8px;align-items:center}
+.checks li::before{content:"○";font-family:var(--mono)}
+.checks li.ok{color:var(--text)}
+.checks li.ok::before{content:"●";color:var(--accent)}
+.hibp{font-size:13.5px;color:var(--muted);margin-top:10px;min-height:20px}
+.gen-out{display:flex;gap:8px;align-items:stretch}
+.gen-out output{flex:1;padding:14px 16px;border-radius:12px;background:rgba(0,0,0,.35);border:1px dashed var(--line-hi);font:600 15px var(--mono);word-break:break-all;color:var(--accent)}
+.range{display:flex;align-items:center;gap:12px;margin:18px 0 12px;font-size:14px}
+.range input{flex:1;accent-color:var(--accent)}
+.range b{font:700 15px var(--mono);min-width:28px;text-align:right}
+.toggles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.toggles label{display:flex;align-items:center;gap:9px;font-size:13.5px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);cursor:pointer;user-select:none}
+.toggles input{accent-color:var(--accent);width:16px;height:16px}
+.tip-card{margin-top:18px;padding:20px 22px;display:flex;gap:16px;align-items:center}
+.tip-card .ic{font-size:30px}
+.tip-card p{flex:1;font-size:15px}
+.tip-card small{display:block;font:700 11px var(--mono);color:var(--warn);letter-spacing:.12em;margin-bottom:4px}
+
+/* quiz */
+.quiz{padding:30px;max-width:880px;margin:0 auto}
+.modes{display:inline-flex;padding:4px;border-radius:12px;border:1px solid var(--line-hi);background:var(--card-solid)}
+.modes button{padding:8px 14px;border-radius:9px;border:none;background:none;color:var(--muted);font-weight:600;font-size:13.5px;cursor:pointer}
+.modes button.on{background:rgba(43,240,180,.14);color:var(--accent)}
+.quiz-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.qcount{font:700 13.5px var(--mono);color:var(--accent)}
+.qtopic{font-size:12px;font-weight:700;color:var(--warn);background:rgba(255,179,64,.1);padding:4px 10px;border-radius:999px}
+.progress{height:6px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;margin-bottom:18px}
+.progress div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .4s}
+.timer{display:flex;align-items:center;gap:10px;margin-bottom:18px;font:600 13px var(--mono);color:var(--muted)}
+.timer .t{flex:1;height:4px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+.timer .t div{height:100%;background:var(--warn);width:100%}
+.timer.low{color:var(--danger)} .timer.low .t div{background:var(--danger)}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:22px}
+.dots button{width:28px;height:28px;border-radius:8px;border:1px solid transparent;background:rgba(255,255,255,.05);color:var(--muted);font:700 11px var(--mono);cursor:pointer;transition:.2s}
+.dots button:disabled{cursor:default}
+.dots button.cur{border-color:var(--accent);color:var(--text)}
+.dots button.ok{background:rgba(43,240,180,.18);color:var(--accent)}
+.dots button.bad{background:rgba(255,77,109,.18);color:var(--danger)}
+.dots button.done{background:rgba(74,168,255,.18);color:var(--accent2)}
+.qtext{font:600 22px/1.4 var(--head);letter-spacing:-.01em;margin-bottom:20px}
+.opts{display:grid;gap:12px}
+.opt{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:15px 18px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.02);color:var(--text);font:500 15.5px Inter;cursor:pointer;transition:.18s}
+.opt:hover:not(:disabled){border-color:var(--accent2);background:rgba(74,168,255,.08);transform:translateX(3px)}
+.opt .let{flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font:700 13px var(--mono);background:rgba(255,255,255,.06)}
+.opt.correct{border-color:var(--accent);background:rgba(43,240,180,.11)}
+.opt.correct .let{background:var(--accent);color:#03130d}
+.opt.wrong{border-color:var(--danger);background:rgba(255,77,109,.11)}
+.opt.wrong .let{background:var(--danger);color:#fff}
+.opt.picked{border-color:var(--accent2);background:rgba(74,168,255,.12)}
+.opt.picked .let{background:var(--accent2);color:#03130d}
+.opt:disabled{cursor:default}
+.explain{margin-top:18px;padding:14px 16px;border-radius:12px;background:rgba(74,168,255,.08);border-left:3px solid var(--accent2);font-size:14.5px;color:#cfdaec;animation:fade .3s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:24px}
+.hint{font-size:12px;color:var(--dim)}
+.hint kbd{font:500 11px var(--mono);border:1px solid var(--line-hi);border-radius:5px;padding:1px 5px;margin:0 2px}
+.result{text-align:center}
+.ring{width:180px;height:180px;margin:0 auto 18px;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .val{position:absolute;inset:0;display:grid;place-items:center;font:700 42px var(--head)}
+.ring .val small{display:block;font:500 13px Inter;color:var(--muted);text-align:center}
+.result h3{font:700 28px var(--head);margin-bottom:6px}
+.result > p{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:24px 0}
+.stat{padding:14px 10px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
+.stat b{display:block;font:700 22px var(--head)}
+.stat span{font-size:12px;color:var(--muted)}
+.res-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.res-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:26px;text-align:left}
+.res-cols h4{font:600 14px var(--head);color:var(--muted);margin-bottom:10px}
+.hist{display:grid;gap:6px;font:500 13px var(--mono)}
+.hist div{display:flex;justify-content:space-between;padding:8px 12px;border-radius:9px;background:rgba(255,255,255,.03)}
+.review{text-align:left;margin-top:24px;display:grid;gap:10px}
+.rv{padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.02);font-size:14px}
+.rv.ok{border-left:3px solid var(--accent)} .rv.bad{border-left:3px solid var(--danger)}
+.rv b{display:block;margin-bottom:4px;font-size:14.5px}
+.rv .a{color:var(--accent)} .rv .y{color:var(--danger)} .rv .e{color:var(--muted);display:block;margin-top:4px;font-size:13px}
+
+/* misc */
+footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;color:var(--muted);font-size:13.5px}
+.foot-row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+#toTop{position:fixed;right:20px;bottom:20px;z-index:70;width:44px;height:44px;border-radius:12px;opacity:0;pointer-events:none;transition:.3s}
+#toTop.show{opacity:1;pointer-events:auto}
+#toasts{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:95;display:grid;gap:8px;justify-items:center}
+.toast{padding:12px 18px;border-radius:12px;background:#111c31;border:1px solid var(--line-hi);box-shadow:0 12px 40px rgba(0,0,0,.5);font-size:14px;animation:fade .25s;max-width:min(420px,90vw)}
+.toast.ok{border-color:rgba(43,240,180,.5)}
+.toast a{color:var(--accent);font-weight:600}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:99}
+
+@media (max-width:980px){
+  .featured,.pulse-grid,.tools-grid{grid-template-columns:1fr}
+  .news-grid{grid-template-columns:repeat(2,1fr)}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .nav{flex-direction:column;align-items:flex-start}
+  .nav-links{width:100%;overflow-x:auto}
+  .news-grid,.checks,.toggles,.res-cols{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .big .news-img{height:200px}
+  .big h3{font-size:20px}
+  .quiz{padding:20px}
+  .qtext{font-size:18px}
+  .ticker-label .txt,.ticker-clock,.hint,.search kbd{display:none}
+  .sec-head h2{font-size:26px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="scrollbar"></div>
+
+<div class="ticker">
+  <div class="ticker-label"><span class="dot"></span><span class="txt">BREAKING</span></div>
+  <div class="ticker-track"><div class="ticker-move" id="ticker"><a>Loading the latest headlines…</a></div></div>
+  <div class="ticker-clock" id="clock">--:--:-- UTC</div>
+</div>
+
+<header class="wrap">
+  <div class="nav">
+    <a class="logo" href="#top">
+      <span class="logo-ico"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#03130d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+      <span>Cyber<b>Shield</b></span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#news">News</a><a href="#pulse">Threat Pulse</a><a href="#tools">Password Lab</a><a href="#quiz">Quiz</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<div class="hero wrap">
+  <canvas id="particles"></canvas>
+  <div class="pill"><span class="dot"></span> Live feed from 4 trusted security sources</div>
+  <h1>Stay ahead of every<br><span class="grad">cyber threat</span></h1>
+  <p class="lead">Real-time security news, a live threat dashboard, a password lab and a 20-question challenge that changes every time you play.</p>
+  <div class="term"><span class="p">root@shield:~$</span><span id="typed"></span><span class="cur">&nbsp;</span></div>
+  <div class="kpis">
+    <div class="card kpi spot reveal"><b id="kStories">0</b><span>Stories tracked</span></div>
+    <div class="card kpi spot reveal"><b id="kCrit" style="color:var(--danger)">0</b><span>Critical alerts</span></div>
+    <div class="card kpi spot reveal"><b id="kSrc" style="color:var(--accent2)">0/4</b><span>Sources online</span></div>
+    <div class="card kpi spot reveal"><b id="kBest" style="color:var(--accent)">–</b><span>Your best quiz score</span></div>
+  </div>
+</div>
+
+<!-- NEWS -->
+<section id="news" class="wrap">
+  <div class="sec-head">
+    <div>
+      <div class="eyebrow">// Live intelligence</div>
+      <h2>Latest security news</h2>
+      <div class="status" id="status"><span class="dot"></span> Connecting to feeds…</div>
+    </div>
+    <button class="btn" id="refresh"><span class="ico">⟳</span> Refresh</button>
+  </div>
+  <div class="toolbar">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search headlines, CVEs, vendors…" autocomplete="off">
+      <kbd>/</kbd>
+    </label>
+    <select id="srcSel" aria-label="Source"><option value="">All sources</option></select>
+    <select id="sortSel" aria-label="Sort"><option value="new">Newest first</option><option value="crit">Critical first</option></select>
+  </div>
+  <div class="chips" id="cats"></div>
+  <div id="newsArea">
+    <div class="featured"><div class="skel" style="min-height:440px"></div><div class="skel" style="min-height:440px"></div></div>
+    <div class="news-grid"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+  </div>
+  <div class="center"><button class="btn" id="more" hidden>Load more stories</button></div>
+</section>
+
+<!-- THREAT PULSE -->
+<section id="pulse" class="wrap">
+  <div class="sec-head">
+    <div>
+      <div class="eyebrow">// Analytics</div>
+      <h2>Threat Pulse</h2>
+      <p>Calculated live from the headlines above. Click a category bar, a radar blip or a keyword to explore.</p>
+    </div>
+  </div>
+  <div class="pulse-grid">
+    <div class="card panel spot reveal">
+      <h3>Threat level <small>last 72h</small></h3>
+      <div class="gauge">
+        <svg viewBox="0 0 220 130">
+          <defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#2bf0b4"/><stop offset=".5" stop-color="#ffb340"/><stop offset="1" stop-color="#ff4d6d"/></linearGradient></defs>
+          <path d="M20 115 A90 90 0 0 1 200 115" stroke="rgba(255,255,255,.07)" stroke-width="16" fill="none" stroke-linecap="round"/>
+          <path id="gArc" d="M20 115 A90 90 0 0 1 200 115" stroke="url(#gg)" stroke-width="16" fill="none" stroke-linecap="round" stroke-dasharray="282.7" stroke-dashoffset="282.7" style="transition:stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1)"/>
+        </svg>
+        <div class="lvl" id="gLvl">—</div>
+        <p id="gTxt">Waiting for data…</p>
+      </div>
+    </div>
+    <div class="card panel spot reveal">
+      <h3>Attack categories <small>stories</small></h3>
+      <div class="bars" id="bars"></div>
+    </div>
+    <div class="card panel spot reveal">
+      <h3>Signal radar <small>newest = center</small></h3>
+      <div class="radar-box"><canvas id="radar"></canvas></div>
+      <div class="legend"><span><i style="background:var(--danger)"></i>Critical</span><span><i style="background:var(--accent)"></i>Standard</span></div>
+    </div>
+  </div>
+  <div class="card keywords reveal" id="keywords"><span>TRENDING</span></div>
+</section>
+
+<!-- TOOLS -->
+<section id="tools" class="wrap">
+  <div class="sec-head">
+    <div>
+      <div class="eyebrow">// Toolkit</div>
+      <h2>Password Lab</h2>
+      <p>Everything runs locally in your browser. Your password is never sent anywhere (the breach check only sends the first 5 characters of its SHA-1 hash).</p>
+    </div>
+  </div>
+  <div class="tools-grid">
+    <div class="card panel spot reveal">
+      <h3>Strength analyzer</h3>
+      <div class="field">
+        <input id="pw" type="password" placeholder="Type a password to test…" autocomplete="off" spellcheck="false">
+        <button id="pwEye" aria-label="Show password">👁</button>
+      </div>
+      <div class="meter" id="meter"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="pw-sum"><b id="pwLabel">—</b><span id="pwCrack">Estimated crack time appears here</span></div>
+      <ul class="checks" id="checks">
+        <li data-c="len">At least 12 characters</li><li data-c="up">Uppercase letter</li>
+        <li data-c="low">Lowercase letter</li><li data-c="num">Number</li>
+        <li data-c="sym">Symbol</li><li data-c="pat">No common patterns</li>
+      </ul>
+      <button class="btn sm" id="hibpBtn">🔍 Check against known breaches</button>
+      <div class="hibp" id="hibp"></div>
+    </div>
+    <div class="card panel spot reveal">
+      <h3>Secure generator <small>crypto.getRandomValues</small></h3>
+      <div class="gen-out"><output id="genOut">—</output><button class="btn" id="copyGen" aria-label="Copy">⧉</button></div>
+      <div class="range">Length <input type="range" id="genLen" min="8" max="64" value="20"><b id="genLenV">20</b></div>
+      <div class="toggles">
+        <label><input type="checkbox" id="gUp" checked> A–Z</label>
+        <label><input type="checkbox" id="gLow" checked> a–z</label>
+        <label><input type="checkbox" id="gNum" checked> 0–9</label>
+        <label><input type="checkbox" id="gSym" checked> !@#$</label>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn primary" id="genBtn">⚡ Generate</button>
+        <button class="btn ghost" id="testGen">Test it →</button>
+      </div>
+    </div>
+  </div>
+  <div class="card tip-card spot reveal">
+    <div class="ic">💡</div>
+    <p><small>SECURITY TIP OF THE DAY</small><span id="tipTxt"></span></p>
+    <button class="btn sm" id="tipNext">Next tip</button>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" class="wrap">
+  <div class="sec-head">
+    <div>
+      <div class="eyebrow">// Challenge</div>
+      <h2>Cyber Knowledge Quiz</h2>
+      <p>20 random questions from a bank of <b id="bankN"></b>. Practice mode explains every answer; Exam mode gives you 25 seconds per question.</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div class="modes" id="modes"><button data-m="practice" class="on">Practice</button><button data-m="exam">Exam ⏱</button></div>
+      <button class="btn" id="newQuiz">🔀 New quiz</button>
+    </div>
+  </div>
+  <div class="card quiz spot" id="quizBox"></div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap foot-row">
+    <span>© 2026 CyberShield · Sources: The Hacker News, BleepingComputer, Krebs on Security, SecurityWeek</span>
+    <span class="mono">stay patched · stay paranoid 🔐</span>
+  </div>
+</footer>
+
+<button class="btn" id="toTop" aria-label="Back to top">↑</button>
+<div id="toasts"></div>
+<div class="tip" id="tip"></div>
+
+<script>
+"use strict";
+/* ============ helpers ============ */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl=u=>/^https?:\/\//i.test(u||"")?u:"#";
+const strip=h=>{const d=document.createElement("div");d.innerHTML=h||"";return (d.textContent||"").replace(/\s+/g," ").trim();};
+const hash=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))|0;return Math.abs(h);};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch{return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}};
+const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function toast(html,cls=""){const t=document.createElement("div");t.className="toast "+cls;t.innerHTML=html;$("#toasts").appendChild(t);setTimeout(()=>t.remove(),5000);}
+async function fetchT(url,ms=9000){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{const r=await fetch(url,{signal:c.signal});if(!r.ok)throw new Error(r.status);return r;}finally{clearTimeout(t);}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true;}catch{const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand("copy");}catch{}a.remove();return ok;}}
+function timeAgo(d){const s=(Date.now()-d)/1000;if(s<0||isNaN(s))return "recently";if(s<60)return "just now";if(s<3600)return Math.floor(s/60)+"m ago";if(s<86400)return Math.floor(s/3600)+"h ago";return Math.floor(s/86400)+"d ago";}
+function countUp(el,to,suffix=""){if(reduced){el.textContent=to+suffix;return;}const from=parseInt(el.textContent)||0,t0=performance.now();const step=t=>{const p=Math.min(1,(t-t0)/900);el.textContent=Math.round(from+(to-from)*(1-Math.pow(1-p,3)))+suffix;if(p<1)requestAnimationFrame(step);};requestAnimationFrame(step);}
+
+/* ============ chrome: clock, scroll, reveal, spotlight, typing ============ */
+setInterval(()=>{$("#clock").textContent=new Date().toISOString().slice(11,19)+" UTC";},1000);
+addEventListener("scroll",()=>{const h=document.documentElement;$("#scrollbar").style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+"%";$("#toTop").classList.toggle("show",h.scrollTop>700);
+  let act=null;for(const id of ["news","pulse","tools","quiz"]){const s=document.getElementById(id);if(s.getBoundingClientRect().top<200)act=id;}
+  $$("#navLinks a").forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+act));},{passive:true});
+$("#toTop").onclick=()=>scrollTo({top:0,behavior:"smooth"});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}}),{threshold:.12});
+$$(".reveal").forEach(el=>io.observe(el));
+document.addEventListener("pointermove",e=>{const el=e.target.closest&&e.target.closest(".spot");if(!el)return;const r=el.getBoundingClientRect();el.style.setProperty("--mx",(e.clientX-r.left)+"px");el.style.setProperty("--my",(e.clientY-r.top)+"px");});
+(function typing(){const cmds=["./threat-scan --live","tail -f /var/log/news.log","nmap -sV headlines.local","./quiz --random 20","openssl rand -base64 24"];let i=0,j=0,del=false;const el=$("#typed");
+  (function tick(){const c=cmds[i];el.textContent=" "+c.slice(0,j);if(!del&&j<c.length){j++;setTimeout(tick,60);}else if(!del){del=true;setTimeout(tick,1800);}else if(j>0){j--;setTimeout(tick,25);}else{del=false;i=(i+1)%cmds.length;setTimeout(tick,300);}})();})();
+
+/* particles */
+(function particles(){const c=$("#particles"),ctx=c.getContext("2d");let W,H,pts=[],vis=true,mouse={x:-999,y:-999};
+  function size(){const d=devicePixelRatio||1;W=c.clientWidth;H=c.clientHeight;c.width=W*d;c.height=H*d;ctx.setTransform(d,0,0,d,0,0);
+    const n=Math.min(70,Math.floor(W*H/14000));pts=Array.from({length:n},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35}));}
+  size();addEventListener("resize",size);
+  c.parentElement.addEventListener("pointermove",e=>{const r=c.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;});
+  new IntersectionObserver(([e])=>vis=e.isIntersecting).observe(c);
+  (function loop(){requestAnimationFrame(loop);if(!vis||reduced)return;ctx.clearRect(0,0,W,H);
+    for(const p of pts){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;}
+    for(let i=0;i<pts.length;i++){const a=pts[i];for(let j=i+1;j<pts.length;j++){const b=pts[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<130){ctx.strokeStyle=`rgba(74,168,255,${.18*(1-d/130)})`;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}}
+      const md=Math.hypot(a.x-mouse.x,a.y-mouse.y);if(md<160){ctx.strokeStyle=`rgba(43,240,180,${.4*(1-md/160)})`;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(mouse.x,mouse.y);ctx.stroke();}
+      ctx.fillStyle="rgba(43,240,180,.7)";ctx.beginPath();ctx.arc(a.x,a.y,1.6,0,7);ctx.fill();}})();})();
+
+/* ============ NEWS ============ */
+const FEEDS=[
+  {name:"The Hacker News",url:"https://feeds.feedburner.com/TheHackersNews"},
+  {name:"BleepingComputer",url:"https://www.bleepingcomputer.com/feed/"},
+  {name:"Krebs on Security",url:"https://krebsonsecurity.com/feed/"},
+  {name:"SecurityWeek",url:"https://feeds.feedburner.com/securityweek"}
+];
+const CATS=[
+  {id:"ransomware",name:"Ransomware",ic:"🔒",col:"#ff4d6d",re:/ransom|extortion|lockbit|akira|blackcat|alphv|clop|encrypt(ed|s) files/i},
+  {id:"vuln",name:"Vulnerabilities",ic:"🩹",col:"#ffb340",re:/vulnerab|cve-\d|zero[- ]?day|0-day|flaw|patch|exploit|rce|bug|security update/i},
+  {id:"malware",name:"Malware",ic:"🦠",col:"#a07bff",re:/malware|trojan|botnet|backdoor|stealer|\brat\b|loader|worm|spyware|rootkit|infostealer/i},
+  {id:"phishing",name:"Phishing & Scams",ic:"🎣",col:"#4aa8ff",re:/phish|scam|fraud|social engineering|smish|impersonat|fake/i},
+  {id:"breach",name:"Data Breaches",ic:"💾",col:"#ff7ad9",re:/breach|leak|exposed|stolen|data of|records|hacked/i},
+  {id:"apt",name:"Nation-State",ic:"🛰️",col:"#38e1ff",re:/\bapt\d*|nation[- ]state|state[- ]sponsored|espionage|lazarus|north korea|chinese|russian|iranian|kimsuky|volt typhoon/i},
+  {id:"ai",name:"AI Security",ic:"🤖",col:"#2bf0b4",re:/\bai\b|\bllm|chatgpt|openai|gemini|copilot|claude|deepfake|machine learning|prompt injection/i}
+];
+const GENERAL={id:"general",name:"General",ic:"🛡️",col:"#8696b0"};
+const CRIT_RE=/zero[- ]?day|0-day|actively exploited|critical|emergency|cvss (9|10)|under attack|in the wild|mass exploitation/i;
+const FALLBACK=[
+  ["Ransomware gangs ramp up attacks on hospitals worldwide","Researchers report a sharp rise in ransomware incidents targeting healthcare networks, with several facilities forced to divert patients.","The Hacker News",1],
+  ["Browser vendors rush out emergency fix for actively exploited zero-day","A critical memory-corruption flaw is being exploited in the wild. Users are urged to update immediately.","BleepingComputer",3],
+  ["Phishing campaign impersonates banks with convincing SMS lures","Attackers send fake delivery and bank alerts linking to credential-harvesting pages.","Krebs on Security",8],
+  ["Supply-chain attack: malicious packages found in open-source registry","Dozens of typosquatted packages contained hidden info-stealer malware.","SecurityWeek",20],
+  ["MFA fatigue attacks surge as criminals bypass two-factor prompts","Security teams warn of push-bombing tactics used to trick users into approving logins.","BleepingComputer",30],
+  ["New IoT botnet hijacks routers and cameras with weak passwords","The botnet is being used to launch large-scale DDoS attacks.","The Hacker News",50],
+  ["Misconfigured cloud storage exposes millions of customer records","An unprotected bucket leaked personal data, including names and phone numbers.","SecurityWeek",70],
+  ["Linux servers targeted by SSH brute-force cryptominer","Attackers guess weak SSH passwords and deploy cryptocurrency miners.","BleepingComputer",90],
+  ["State-sponsored APT group linked to espionage campaign","Investigators tie the operation to a nation-state actor targeting telecoms.","The Hacker News",110],
+  ["Prompt injection flaws found in popular AI assistants","Researchers show how hidden instructions can make LLM tools leak data.","Krebs on Security",130]
+].map(([title,desc,source,h])=>({title,desc,source,link:"#",img:"",date:new Date(Date.now()-h*36e5)}));
+
+let ALL=[], byLink=new Map(), shownN=13, onlineN=0, lastTop=null;
+const F={q:"",cat:"all",src:"",sort:"new"};
+let saved=store.get("cs_saved",[]), readSet=new Set(store.get("cs_read",[]));
+
+function goodImg(u){return u&&/^https?:\/\//.test(u)&&!/feedburner|pixel|1x1|gravatar|doubleclick/i.test(u)?u:"";}
+async function fetchFeed(feed){
+  try{const j=await (await fetchT("https://api.rss2json.com/v1/api.json?rss_url="+encodeURIComponent(feed.url))).json();
+    if(j.status==="ok"&&j.items&&j.items.length)return j.items.map(it=>{
+      const enc=it.enclosure&&(String(it.enclosure.type||"").startsWith("image")||/\.(jpe?g|png|webp|gif)/i.test(it.enclosure.link||""))?it.enclosure.link:"";
+      return {title:strip(it.title),link:it.link,source:feed.name,desc:strip(it.description||it.content).slice(0,280),
+        img:goodImg(it.thumbnail)||goodImg(enc)||goodImg(((it.description||it.content||"").match(/<img[^>]+src=["']([^"']+)/i)||[])[1]),
+        date:new Date(String(it.pubDate||"").replace(" ","T")+"Z")};});
+  }catch(e){}
+  try{const txt=await (await fetchT("https://api.allorigins.win/raw?url="+encodeURIComponent(feed.url),11000)).text();
+    const xml=new DOMParser().parseFromString(txt,"text/xml");
+    const items=[...xml.querySelectorAll("item")].map(it=>{const g=t=>it.getElementsByTagName(t)[0]?.textContent||"";const d=g("description");
+      const media=it.getElementsByTagName("media:content")[0]?.getAttribute("url")||it.querySelector("enclosure")?.getAttribute("url");
+      return {title:strip(g("title")),link:g("link").trim(),source:feed.name,desc:strip(d).slice(0,280),img:goodImg(media)||goodImg((d.match(/<img[^>]+src=["']([^"']+)/i)||[])[1]),date:new Date(g("pubDate"))};});
+    if(items.length)return items;
+  }catch(e){}
+  return [];
+}
+function enrich(i){const txt=i.title+" "+i.desc;i.cat=CATS.find(c=>c.re.test(i.title))||CATS.find(c=>c.re.test(txt))||GENERAL;i.crit=CRIT_RE.test(txt);if(isNaN(i.date))i.date=new Date(0);i.link=safeUrl(i.link);return i;}
+
+async function loadNews(manual){
+  const btn=$("#refresh");btn.classList.add("loading");btn.disabled=true;
+  const st=$("#status");st.className="status";st.innerHTML='<span class="dot"></span> Fetching feeds…';
+  const res=await Promise.all(FEEDS.map(fetchFeed));
+  onlineN=res.filter(r=>r.length).length;
+  let items=res.flat().filter(i=>i.title&&i.link);
+  const live=items.length>0; if(!live)items=FALLBACK.map(x=>({...x}));
+  const seen=new Set();
+  items=items.map(enrich).filter(i=>{const k=i.title.toLowerCase();if(seen.has(k))return false;seen.add(k);return true;}).sort((a,b)=>b.date-a.date);
+  ALL=items;byLink=new Map(items.map(i=>[i.link+"|"+i.title,i]));
+  if(lastTop&&live&&items[0]&&lastTop!==items[0].title)toast(`🔔 New story: <a href="${esc(items[0].link)}" target="_blank" rel="noopener">${esc(items[0].title)}</a>`,"ok");
+  else if(manual)toast(live?"✓ Feeds refreshed":"⚠ Feeds unreachable — showing sample stories");
+  lastTop=items[0]?.title;
+  st.className="status"+(live?"":" off");
+  st.innerHTML=live?`<span class="dot"></span> Live · updated ${new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})} · ${items.length} stories · auto-refresh every 5 min`
+    :`<span class="dot"></span> Feeds unreachable (offline or blocked) — showing sample stories`;
+  $("#srcSel").innerHTML='<option value="">All sources</option>'+[...new Set(items.map(i=>i.source))].map(s=>`<option ${s===F.src?"selected":""}>${esc(s)}</option>`).join("");
+  renderCats();renderNews();renderTicker();renderPulse();
+  countUp($("#kStories"),items.length);countUp($("#kCrit"),items.filter(i=>i.crit).length);$("#kSrc").textContent=onlineN+"/"+FEEDS.length;
+  btn.classList.remove("loading");btn.disabled=false;
+}
+
+function filtered(){
+  let list=F.cat==="saved"?saved.map(s=>({...s,date:new Date(s.date)})).map(enrich):ALL.slice();
+  if(F.cat!=="all"&&F.cat!=="saved")list=list.filter(i=>i.cat.id===F.cat);
+  if(F.src)list=list.filter(i=>i.source===F.src);
+  if(F.q){const q=F.q.toLowerCase();list=list.filter(i=>(i.title+" "+i.desc+" "+i.source).toLowerCase().includes(q));}
+  if(F.sort==="crit")list.sort((a,b)=>(b.crit-a.crit)||(b.date-a.date));
+  return list;
+}
+function renderCats(){
+  const cnt=id=>ALL.filter(i=>i.cat.id===id).length;
+  const list=[{id:"all",name:"All",ic:"",n:ALL.length},...[...CATS,GENERAL].map(c=>({...c,n:cnt(c.id)})).filter(c=>c.n),{id:"saved",name:"Saved",ic:"🔖",n:saved.length}];
+  $("#cats").innerHTML=list.map(c=>`<button class="chip ${F.cat===c.id?"on":""}" data-cat="${c.id}">${c.ic} ${esc(c.name)} <span class="n">${c.n}</span></button>`).join("");
+}
+const isSaved=i=>saved.some(s=>s.link===i.link&&s.title===i.title);
+const keyOf=i=>esc(i.link+"|"+i.title);
+const imgHTML=i=>`<div class="news-img"><div class="ph" style="--h:${hash(i.source)%360}"><span class="ic">${i.cat.ic}</span><span class="sn">${esc(i.source)}</span></div>${i.img?`<img src="${esc(i.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:""}</div>`;
+const metaHTML=i=>`<div class="meta"><span class="src">${esc(i.source)}</span><span>·</span><span>${timeAgo(i.date)}</span>${i.crit?'<span class="badge crit">CRITICAL</span>':""}${Date.now()-i.date<864e5?'<span class="badge new">NEW</span>':""}</div>`;
+const saveBtn=i=>`<button class="save ${isSaved(i)?"on":""}" data-save="${keyOf(i)}" aria-label="Save story" title="Save for later"><svg width="15" height="15" viewBox="0 0 24 24" fill="${isSaved(i)?"currentColor":"none"}" stroke="currentColor" stroke-width="2.2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>`;
+const linkA=(i,inner)=>`<a class="stretch" href="${esc(i.link)}" ${i.link==="#"?"":'target="_blank" rel="noopener"'} data-read="${keyOf(i)}">${inner}</a>`;
+const card=(i,cls="")=>`<article class="card news-card spot ${cls} ${readSet.has(i.link)?"read":""}">${imgHTML(i)}${saveBtn(i)}
+  <div class="news-body">${metaHTML(i)}<h3>${linkA(i,esc(i.title))}</h3><p class="desc">${esc(i.desc)}</p>
+  <div class="foot"><span class="tag">${i.cat.ic} ${esc(i.cat.name)}</span><span class="more">Read →</span></div></div></article>`;
+
+function renderNews(){
+  const list=filtered(), plain=F.cat==="all"&&!F.src&&!F.q&&F.sort==="new";
+  let html="";
+  if(!list.length){html=`<div class="news-grid"><div class="empty"><b>${F.cat==="saved"?"🔖":"🔎"}</b>${F.cat==="saved"?"No saved stories yet. Tap the bookmark on any story.":"No stories match your filters."}</div></div>`;$("#more").hidden=true;}
+  else if(plain&&list.length>=5){
+    const [top,...rest]=list,side=rest.slice(0,4),grid=rest.slice(4,shownN);
+    html=`<div class="featured">${card(top,"big")}<div class="side">${side.map((i,n)=>`<article class="card side-item spot ${readSet.has(i.link)?"read":""}"><span class="num">0${n+2}</span><div>${metaHTML(i)}<h4>${linkA(i,esc(i.title))}</h4></div></article>`).join("")}</div></div>
+      <div class="news-grid">${grid.map(i=>card(i)).join("")}</div>`;
+    $("#more").hidden=list.length<=shownN;
+  }else{html=`<div class="news-grid">${list.slice(0,shownN).map(i=>card(i)).join("")}</div>`;$("#more").hidden=list.length<=shownN;}
+  $("#newsArea").innerHTML=html;
+}
+function renderTicker(){const t=ALL.slice(0,12).map(i=>`<a class="${i.crit?"crit":""}" href="${esc(i.link)}" target="_blank" rel="noopener">${esc(i.title)}</a>`).join("");$("#ticker").innerHTML=t+t;}
+
+$("#newsArea").addEventListener("click",e=>{
+  const sb=e.target.closest(".save");
+  if(sb){e.preventDefault();const it=byLink.get(sb.dataset.save)||saved.find(s=>s.link+"|"+s.title===sb.dataset.save);if(!it)return;
+    if(isSaved(it)){saved=saved.filter(s=>!(s.link===it.link&&s.title===it.title));toast("Removed from saved");}
+    else{saved.unshift({title:it.title,link:it.link,source:it.source,desc:it.desc,img:it.img,date:+it.date});toast("🔖 Saved for later","ok");}
+    store.set("cs_saved",saved.slice(0,100));renderCats();renderNews();return;}
+  const a=e.target.closest("a[data-read]");
+  if(a){if(a.getAttribute("href")==="#"){e.preventDefault();toast("This is a sample story — live feeds are offline.");return;}
+    const it=byLink.get(a.dataset.read)||{link:a.getAttribute("href")};readSet.add(it.link);store.set("cs_read",[...readSet].slice(-300));a.closest("article").classList.add("read");}
+});
+$("#cats").addEventListener("click",e=>{const c=e.target.closest(".chip");if(!c)return;F.cat=c.dataset.cat;shownN=13;renderCats();renderNews();});
+let qT;$("#q").addEventListener("input",e=>{clearTimeout(qT);qT=setTimeout(()=>{F.q=e.target.value.trim();shownN=13;renderNews();},180);});
+$("#srcSel").onchange=e=>{F.src=e.target.value;shownN=13;renderNews();};
+$("#sortSel").onchange=e=>{F.sort=e.target.value;renderNews();};
+$("#more").onclick=()=>{shownN+=9;renderNews();};
+$("#refresh").onclick=()=>loadNews(true);
+document.addEventListener("keydown",e=>{if(e.key==="/"&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){e.preventDefault();$("#q").focus();}});
+setInterval(()=>{if(!document.hidden)loadNews(false);},5*60*1000);
+
+/* ============ THREAT PULSE ============ */
+const STOP=new Set("the and for with from that this into over after about their have has more than new says said users which what your will been were also they how its are was you can could amid via using used million year years week weeks day days now not but who why when where while just still may might report reports reported company companies security cyber attack attacks hackers hacker data update updates warns warning first back being them some most other over under against across".split(" "));
+function renderPulse(){
+  const recent=ALL.filter(i=>Date.now()-i.date<72*36e5);const pool=recent.length>=5?recent:ALL;
+  const crit=pool.filter(i=>i.crit).length,ransom=pool.filter(i=>i.cat.id==="ransomware").length,apt=pool.filter(i=>i.cat.id==="apt").length;
+  const score=Math.min(1,(crit*3+ransom*2+apt*1.5+pool.length*.15)/40);
+  const L=[["LOW","#2bf0b4"],["GUARDED","#4aa8ff"],["ELEVATED","#ffb340"],["HIGH","#ff8a4d"],["SEVERE","#ff4d6d"]][Math.min(4,Math.floor(score*5))];
+  $("#gArc").style.strokeDashoffset=282.7*(1-Math.max(.04,score));
+  $("#gLvl").textContent=L[0];$("#gLvl").style.color=L[1];
+  $("#gTxt").textContent=`${crit} critical · ${ransom} ransomware · ${apt} nation-state stories in ${pool.length} reports`;
+  const counts=[...CATS,GENERAL].map(c=>({c,n:ALL.filter(i=>i.cat.id===c.id).length})).sort((a,b)=>b.n-a.n);const max=Math.max(1,...counts.map(x=>x.n));
+  $("#bars").innerHTML=counts.map(({c,n})=>`<div class="bar-row" data-cat="${c.id}"><span>${c.ic} ${esc(c.name)}</span><div class="track"><div class="fill" style="background:${c.col}" data-w="${n/max*100}"></div></div><b>${n}</b></div>`).join("");
+  requestAnimationFrame(()=>setTimeout(()=>$$(".bar-row .fill").forEach(f=>f.style.width=f.dataset.w+"%"),60));
+  const wc={};ALL.forEach(i=>i.title.replace(/[^\w\s-]/g," ").split(/\s+/).forEach(w=>{const k=w.toLowerCase();if(k.length>3&&!STOP.has(k)&&!/^\d+$/.test(k))wc[k]=(wc[k]||0)+1;}));
+  const top=Object.entries(wc).filter(x=>x[1]>1).sort((a,b)=>b[1]-a[1]).slice(0,14);
+  $("#keywords").innerHTML="<span>TRENDING</span>"+(top.length?top.map(([w,n])=>`<button class="kw" data-kw="${esc(w)}">#${esc(w)}<sup>${n}</sup></button>`).join(""):'<em style="color:var(--dim);font-size:13px">Not enough data yet</em>');
+  radar.set(ALL.slice(0,14));
+}
+$("#bars").addEventListener("click",e=>{const r=e.target.closest(".bar-row");if(!r)return;F.cat=r.dataset.cat;shownN=13;renderCats();renderNews();$("#news").scrollIntoView({behavior:"smooth"});});
+$("#keywords").addEventListener("click",e=>{const k=e.target.closest(".kw");if(!k)return;F.q=k.dataset.kw;$("#q").value=F.q;F.cat="all";renderCats();renderNews();$("#news").scrollIntoView({behavior:"smooth"});});
+
+const radar=(function(){const c=$("#radar"),ctx=c.getContext("2d"),tip=$("#tip");let S=0,blips=[],ang=0,vis=false,hover=null;
+  function size(){const d=devicePixelRatio||1;S=c.clientWidth;c.width=c.height=S*d;ctx.setTransform(d,0,0,d,0,0);}
+  size();addEventListener("resize",size);new IntersectionObserver(([e])=>vis=e.isIntersecting).observe(c);
+  function set(items){blips=items.map((it,k)=>({it,a:(hash(it.title)%360)*Math.PI/180,r:.18+.74*(k/Math.max(1,items.length-1))}));}
+  function pos(b){const R=S/2-8;return [S/2+Math.cos(b.a)*b.r*R,S/2+Math.sin(b.a)*b.r*R];}
+  (function loop(){requestAnimationFrame(loop);if(!vis||!S)return;const R=S/2-8,cx=S/2;ctx.clearRect(0,0,S,S);
+    ctx.strokeStyle="rgba(43,240,180,.16)";ctx.lineWidth=1;for(let k=1;k<=4;k++){ctx.beginPath();ctx.arc(cx,cx,R*k/4,0,7);ctx.stroke();}
+    ctx.beginPath();ctx.moveTo(cx-R,cx);ctx.lineTo(cx+R,cx);ctx.moveTo(cx,cx-R);ctx.lineTo(cx,cx+R);ctx.stroke();
+    if(!reduced)ang=(ang+.018)%(Math.PI*2);
+    for(let k=0;k<40;k++){const a0=ang-k*.025;ctx.fillStyle=`rgba(43,240,180,${.22*(1-k/40)})`;ctx.beginPath();ctx.moveTo(cx,cx);ctx.arc(cx,cx,R,a0-.025,a0);ctx.closePath();ctx.fill();}
+    ctx.strokeStyle="rgba(43,240,180,.9)";ctx.beginPath();ctx.moveTo(cx,cx);ctx.lineTo(cx+Math.cos(ang)*R,cx+Math.sin(ang)*R);ctx.stroke();
+    for(const b of blips){const [x,y]=pos(b);let d=(ang-b.a)%(Math.PI*2);if(d<0)d+=Math.PI*2;const glow=Math.max(.25,1-d/(Math.PI*1.4));
+      const col=b.it.crit?"255,77,109":"43,240,180";ctx.fillStyle=`rgba(${col},${glow})`;ctx.shadowColor=`rgba(${col},1)`;ctx.shadowBlur=14*glow;
+      ctx.beginPath();ctx.arc(x,y,b===hover?6:3.6,0,7);ctx.fill();ctx.shadowBlur=0;
+      if(b===hover){ctx.strokeStyle=`rgba(${col},.8)`;ctx.beginPath();ctx.arc(x,y,11,0,7);ctx.stroke();}}})();
+  function hit(e){const r=c.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;return blips.find(b=>{const [x,y]=pos(b);return Math.hypot(x-mx,y-my)<10;})||null;}
+  c.addEventListener("pointermove",e=>{hover=hit(e);c.style.cursor=hover?"pointer":"crosshair";
+    if(hover){tip.innerHTML=`<b style="color:${hover.it.crit?"var(--danger)":"var(--accent)"}">${hover.it.cat.ic} ${esc(hover.it.cat.name)}</b> · <span style="color:var(--muted)">${timeAgo(hover.it.date)}</span><br>${esc(hover.it.title)}`;tip.style.left=Math.min(innerWidth-300,e.clientX+14)+"px";tip.style.top=(e.clientY+14)+"px";tip.style.opacity=1;}else tip.style.opacity=0;});
+  c.addEventListener("pointerleave",()=>{hover=null;tip.style.opacity=0;});
+  c.addEventListener("click",()=>{if(hover&&hover.it.link!=="#")open(hover.it.link,"_blank","noopener");});
+  return {set};})();
+
+/* ============ PASSWORD LAB ============ */
+const COMMON=["password","123456","12345678","qwerty","abc123","111111","123123","admin","letmein","welcome","monkey","dragon","iloveyou","football","baseball","sunshine","princess","master","password1","qwerty123","1q2w3e4r","000000","654321","superman","trustno1"];
+function analyze(p){
+  const has={low:/[a-z]/.test(p),up:/[A-Z]/.test(p),num:/\d/.test(p),sym:/[^a-zA-Z0-9]/.test(p)};
+  const pool=(has.low?26:0)+(has.up?26:0)+(has.num?10:0)+(has.sym?33:0);
+  let ent=p.length*Math.log2(pool||1);
+  const lower=p.toLowerCase();
+  const common=COMMON.some(c=>lower.includes(c));
+  const pattern=/(.)\1{2,}/.test(p)||/(0123|1234|2345|3456|4567|5678|6789|abcd|bcde|qwer|asdf|zxcv|1qaz)/i.test(p)||/(19|20)\d{2}$/.test(p);
+  if(common)ent=Math.min(ent*.35,22);if(pattern)ent*=.75;
+  const score=ent<28?0:ent<40?1:ent<60?2:ent<80?3:4;
+  const secs=Math.pow(2,ent)/2/1e10;
+  return {has,ent,score,secs,len:p.length>=12,pat:!common&&!pattern};
+}
+function human(s){if(!isFinite(s)||s>3.15e17)return "longer than the age of the universe";if(s<1)return "instantly";
+  const u=[["years",31536e3],["days",86400],["hours",3600],["minutes",60],["seconds",1]];for(const [n,v] of u)if(s>=v){const x=s/v;return (x>1e6?x.toExponential(1):Math.round(x).toLocaleString())+" "+n;}}
+function updatePw(){const p=$("#pw").value,cols=["#ff4d6d","#ff8a4d","#ffb340","#4aa8ff","#2bf0b4"],labs=["Very weak","Weak","Fair","Strong","Very strong"];
+  $("#hibp").textContent="";
+  if(!p){$$("#meter i").forEach(i=>i.style.background="");$("#pwLabel").textContent="—";$("#pwLabel").style.color="";$("#pwCrack").textContent="Estimated crack time appears here";$$("#checks li").forEach(l=>l.classList.remove("ok"));return;}
+  const a=analyze(p);$$("#meter i").forEach((i,k)=>i.style.background=k<=a.score?cols[a.score]:"");
+  $("#pwLabel").textContent=labs[a.score];$("#pwLabel").style.color=cols[a.score];
+  $("#pwCrack").textContent=`≈ ${Math.round(a.ent)} bits · offline crack: ${human(a.secs)}`;
+  const m={len:a.len,up:a.has.up,low:a.has.low,num:a.has.num,sym:a.has.sym,pat:a.pat};$$("#checks li").forEach(l=>l.classList.toggle("ok",!!m[l.dataset.c]));}
+$("#pw").addEventListener("input",updatePw);
+$("#pwEye").onclick=()=>{const i=$("#pw");i.type=i.type==="password"?"text":"password";$("#pwEye").textContent=i.type==="password"?"👁":"🙈";};
+$("#hibpBtn").onclick=async()=>{const p=$("#pw").value,o=$("#hibp");if(!p){o.textContent="Type a password first.";return;}
+  if(!(window.crypto&&crypto.subtle)){o.textContent="Breach check needs a secure context (https or localhost).";return;}
+  o.textContent="Checking…";
+  try{const h=[...new Uint8Array(await crypto.subtle.digest("SHA-1",new TextEncoder().encode(p)))].map(b=>b.toString(16).padStart(2,"0")).join("").toUpperCase();
+    const txt=await (await fetchT("https://api.pwnedpasswords.com/range/"+h.slice(0,5))).text();
+    const line=txt.split("\n").find(l=>l.startsWith(h.slice(5)));const n=line?parseInt(line.split(":")[1]):0;
+    o.innerHTML=n?`<span style="color:var(--danger)">⚠ Found in ${n.toLocaleString()} breaches — do not use it.</span>`:`<span style="color:var(--accent)">✓ Not found in known breach data.</span>`;
+  }catch{o.textContent="Could not reach the breach database. Check your connection.";}};
+function randInt(n){const max=Math.floor(4294967296/n)*n,a=new Uint32Array(1);let x;do{crypto.getRandomValues(a);x=a[0];}while(x>=max);return x%n;}
+function generate(){const sets=[["gUp","ABCDEFGHJKLMNPQRSTUVWXYZ"],["gLow","abcdefghijkmnopqrstuvwxyz"],["gNum","23456789"],["gSym","!@#$%^&*()-_=+[]{};:,.?"]].filter(([id])=>$("#"+id).checked).map(s=>s[1]);
+  if(!sets.length){$("#gLow").checked=true;return generate();}
+  const len=+$("#genLen").value,all=sets.join("");const out=sets.map(s=>s[randInt(s.length)]);
+  while(out.length<len)out.push(all[randInt(all.length)]);
+  for(let i=out.length-1;i>0;i--){const j=randInt(i+1);[out[i],out[j]]=[out[j],out[i]];}
+  $("#genOut").textContent=out.join("");}
+$("#genLen").oninput=e=>{$("#genLenV").textContent=e.target.value;generate();};
+$$(".toggles input").forEach(i=>i.onchange=generate);
+$("#genBtn").onclick=generate;
+$("#copyGen").onclick=async()=>{const ok=await copyText($("#genOut").textContent);toast(ok?"✓ Password copied":"Copy failed — select it manually",ok?"ok":"");};
+$("#testGen").onclick=()=>{$("#pw").value=$("#genOut").textContent;$("#pw").type="text";$("#pwEye").textContent="🙈";updatePw();$("#pw").focus();};
+generate();
+
+const TIPS=["Turn on multi-factor authentication for email first — it's the key to resetting every other account.","Use a password manager so every site gets a unique password. Reused passwords fuel credential-stuffing attacks.","Hover over links before clicking. If the domain looks odd, go to the site manually instead.","Install updates promptly — most attacks exploit vulnerabilities that already have patches.","Back up using the 3-2-1 rule: 3 copies, 2 media types, 1 offsite. Test your restores.","Banks and IT support will never ask for your one-time code. Anyone who does is a scammer.","On public Wi-Fi, use a trusted VPN or your phone's hotspot for anything sensitive.","Lock your SIM card with a PIN to make SIM-swap attacks harder.","Review app permissions regularly — a flashlight app doesn't need your contacts.","Disable SSH password login on servers and use key-based authentication instead.","Never plug in a USB drive you found. 'USB drop' attacks are real.","Use separate accounts for admin tasks and daily work — least privilege limits damage.","Check haveibeenpwned.com to see whether your email appeared in a breach.","Encrypt your laptop's disk (BitLocker, FileVault, LUKS) in case it's lost or stolen.","Urgency is a red flag. 'Act now or your account will be closed' is a classic phishing trick."];
+let tipI=Math.floor(Date.now()/864e5)%TIPS.length;
+const showTip=()=>$("#tipTxt").textContent=TIPS[tipI];showTip();
+$("#tipNext").onclick=()=>{tipI=(tipI+1)%TIPS.length;showTip();};
+
+/* ============ QUIZ ============
+   Add your own questions here: {t:"Topic", q:"Question", o:[CORRECT, wrong, wrong, wrong], e:"Explanation"}
+   The first option is always the correct one — options are shuffled automatically. */
+const BANK=[
+ {t:"Fundamentals",q:"What does the CIA triad stand for in cybersecurity?",o:["Confidentiality, Integrity, Availability","Control, Identification, Auditing","Cryptography, Integration, Access","Central Intelligence Agency"],e:"The CIA triad — Confidentiality, Integrity and Availability — is the foundation of information security."},
+ {t:"Fundamentals",q:"What is the core idea of a Zero Trust architecture?",o:["Never trust, always verify every request","Trust everything inside the corporate network","Disable all passwords","Use only one firewall"],e:"Zero Trust assumes breach and authenticates and authorizes every request, regardless of network location."},
+ {t:"Fundamentals",q:"What does 'defense in depth' mean?",o:["Using multiple layers of security controls","Hiding servers underground","Relying on one very strong firewall","Encrypting data twice"],e:"If one layer fails, others still protect the asset — e.g. firewall + EDR + MFA + backups."},
+ {t:"Attacks",q:"What is a phishing attack?",o:["Tricking people into revealing data via fake messages or sites","Flooding a server with traffic","Guessing passwords by brute force","Jamming a Wi-Fi signal"],e:"Phishing impersonates a trusted entity to steal credentials, card numbers or install malware."},
+ {t:"Attacks",q:"What is the main goal of a DDoS attack?",o:["Making a service unavailable","Encrypting files","Stealing passwords","Deleting backups"],e:"Distributed Denial of Service overwhelms a target with traffic from many machines."},
+ {t:"Attacks",q:"What is a Man-in-the-Middle (MITM) attack?",o:["Secretly intercepting communication between two parties","Shutting down a server","Guessing a password","Encrypting a disk"],e:"The attacker sits between two parties and can read or alter the traffic."},
+ {t:"Attacks",q:"What is credential stuffing?",o:["Reusing leaked username/password pairs on other sites","Writing passwords on sticky notes","Storing passwords in a vault","Encrypting credentials"],e:"Because people reuse passwords, one breach can unlock accounts elsewhere. Unique passwords + MFA stop it."},
+ {t:"Attacks",q:"What is a brute-force attack?",o:["Trying every possible password combination","Sending a fake email","Flooding a server","Reverse-engineering code"],e:"Brute force tries combinations until the right one is found. Length and rate-limiting defeat it."},
+ {t:"Attacks",q:"What is a supply chain attack?",o:["Compromising a trusted vendor or dependency to reach its customers","Stealing delivery trucks","Attacking a warehouse Wi-Fi","Phishing a single user"],e:"Examples include poisoned software updates and malicious open-source packages."},
+ {t:"Malware",q:"How does ransomware work?",o:["It encrypts files and demands payment for the key","It only shows ads","It records keystrokes","It speeds up your PC"],e:"Ransomware encrypts data (and often steals it) and demands a ransom for decryption."},
+ {t:"Malware",q:"What does a keylogger do?",o:["Records every key you press","Locks the screen","Disables the internet","Formats the disk"],e:"Keyloggers capture passwords and messages by logging keystrokes."},
+ {t:"Malware",q:"What is a Trojan?",o:["Malware disguised as legitimate software","Self-replicating network malware","A type of antivirus","A phone-only virus"],e:"Like the wooden horse, a Trojan looks useful but hides a malicious payload."},
+ {t:"Malware",q:"What is the key difference between a virus and a worm?",o:["A worm spreads on its own without user action","Viruses only run on Linux","Worms are harmless","There is no difference"],e:"Worms self-propagate across networks; viruses usually attach to files and need to be executed."},
+ {t:"Malware",q:"What is spyware?",o:["Software that secretly monitors the user","A disk-cleaning tool","A video game","A browser theme"],e:"Spyware collects activity, location and personal data without consent."},
+ {t:"Malware",q:"What is a botnet?",o:["A network of infected devices controlled by an attacker","A chatbot","A social network","An antivirus cloud"],e:"Botnets are used for DDoS, spam, credential stuffing and more."},
+ {t:"Web Security",q:"What does SQL Injection target?",o:["The application's database through crafted input","The browser cache","Email servers","Wi-Fi routers"],e:"SQLi injects SQL code through input fields to read or modify database data."},
+ {t:"Web Security",q:"What is Cross-Site Scripting (XSS)?",o:["Injecting scripts that run in other users' browsers","Uploading a file to a server","A password hashing method","A network protocol"],e:"XSS lets attackers run JavaScript in victims' browsers, e.g. to steal session cookies."},
+ {t:"Web Security",q:"What is the best defense against SQL Injection?",o:["Parameterized queries (prepared statements)","Switching to HTTPS","Using a strong admin password","Installing antivirus"],e:"Prepared statements treat user input as data, never as executable SQL."},
+ {t:"Web Security",q:"What is a CSRF attack?",o:["Forcing a logged-in user's browser to send unwanted requests","Reading files from a server","Guessing passwords","Changing DNS records"],e:"Cross-Site Request Forgery abuses an existing session. Anti-CSRF tokens and SameSite cookies prevent it."},
+ {t:"Web Security",q:"What does the HttpOnly cookie flag do?",o:["Prevents JavaScript from reading the cookie","Forces the cookie over HTTP only","Deletes the cookie on close","Encrypts the cookie"],e:"HttpOnly limits the damage of XSS by hiding session cookies from scripts."},
+ {t:"Web Security",q:"What is the OWASP Top 10?",o:["A list of the most critical web application security risks","The ten best antivirus products","Top ten hacker groups","A firewall standard"],e:"OWASP publishes it as an awareness document for developers and security teams."},
+ {t:"Networking",q:"What does the 'S' in HTTPS stand for?",o:["Secure — traffic is encrypted with TLS","Server","Speed","Simple"],e:"HTTPS is HTTP over TLS, protecting data in transit."},
+ {t:"Networking",q:"What is the job of a firewall?",o:["Filtering incoming and outgoing traffic based on rules","Removing viruses","Increasing internet speed","Storing passwords"],e:"Firewalls allow or block network packets according to defined rules."},
+ {t:"Networking",q:"What is a VPN mainly used for?",o:["Sending traffic through an encrypted tunnel","Removing malware","Speeding up the PC","Compressing files"],e:"VPNs encrypt traffic, which is especially useful on untrusted networks."},
+ {t:"Networking",q:"Which port does SSH use by default?",o:["22","80","443","21"],e:"SSH = 22, HTTP = 80, HTTPS = 443, FTP = 21."},
+ {t:"Networking",q:"Which is the default port for HTTPS?",o:["443","8080","22","25"],e:"HTTPS listens on TCP 443 by default."},
+ {t:"Networking",q:"What is Nmap used for?",o:["Scanning networks and open ports","Storing passwords","Editing videos","Backing up files"],e:"Nmap discovers hosts, open ports and running services."},
+ {t:"Networking",q:"What kind of tool is Wireshark?",o:["A network packet analyzer","An antivirus","A password manager","A web browser"],e:"Wireshark captures and dissects network packets in detail."},
+ {t:"Networking",q:"What does DNS do?",o:["Translates domain names into IP addresses","Encrypts data","Sends email","Stores files"],e:"The Domain Name System maps names like example.com to IP addresses."},
+ {t:"Networking",q:"Which protocol sends data, including passwords, in plain text and should be replaced by SSH?",o:["Telnet","SFTP","HTTPS","TLS"],e:"Telnet has no encryption; anyone sniffing the network can read the session."},
+ {t:"Passwords",q:"Which password is the strongest?",o:["T7#qL!9vR$2m_xP","password123","John2005","qwerty"],e:"Long, random passwords mixing character types are the strongest."},
+ {t:"Passwords",q:"What is multi-factor authentication (MFA)?",o:["Using more than one type of proof to log in","Typing several passwords","Having several accounts","Changing your password daily"],e:"Something you know (password) + something you have (phone/key) + something you are (fingerprint)."},
+ {t:"Passwords",q:"How should passwords be stored in a database?",o:["Hashed with a salt using bcrypt or Argon2","As plain text","Base64-encoded","MD5 without a salt"],e:"Use slow, salted password-hashing algorithms. MD5 and Base64 are not secure."},
+ {t:"Passwords",q:"Why is a password manager useful?",o:["It stores a unique strong password for every site","It speeds up the internet","It removes viruses","It blocks websites"],e:"You remember one master password; the manager handles the rest."},
+ {t:"Passwords",q:"What is the purpose of a salt in password hashing?",o:["To make identical passwords produce different hashes","To make hashing faster","To encrypt the database","To shorten passwords"],e:"Salts defeat precomputed rainbow tables and hide reused passwords."},
+ {t:"Cryptography",q:"How many keys does symmetric encryption use?",o:["One shared key","Two: public and private","Three","None"],e:"Symmetric ciphers like AES use the same key to encrypt and decrypt."},
+ {t:"Cryptography",q:"Which algorithm is an example of asymmetric encryption?",o:["RSA","AES","DES","3DES"],e:"RSA uses a public/private key pair. AES and DES are symmetric."},
+ {t:"Cryptography",q:"What is the key property of a cryptographic hash function?",o:["It is one-way — you cannot recover the input from the output","It is reversible encryption","It requires a key","It compresses files"],e:"Hashes like SHA-256 are one-way and used to verify integrity."},
+ {t:"Cryptography",q:"What does a digital signature provide?",o:["Authenticity of the sender and integrity of the data","Only speed","File hiding","Internet access"],e:"A signature proves who sent a message and that it wasn't modified."},
+ {t:"Cryptography",q:"Which hash algorithm is considered broken for security use today?",o:["MD5","SHA-256","SHA-3","BLAKE2"],e:"Practical collisions exist for MD5, so it must not be used for security."},
+ {t:"Social Engineering",q:"What is social engineering?",o:["Manipulating people psychologically to gain access or data","Building a social network","A coding technique","Configuring servers"],e:"Attackers exploit human trust and mistakes rather than technical flaws."},
+ {t:"Social Engineering",q:"A caller claiming to be your bank asks for the SMS code you just received. What do you do?",o:["Refuse, hang up and call the bank's official number","Read them the code","Give them your card number too","Delete the banking app"],e:"Banks never ask for one-time codes. This is vishing (voice phishing)."},
+ {t:"Social Engineering",q:"What is smishing?",o:["Phishing via SMS text messages","Email spam","A Wi-Fi attack","A computer virus"],e:"Smishing = SMS + phishing, usually with a malicious link."},
+ {t:"Social Engineering",q:"You find a USB drive in the parking lot. What should you do?",o:["Don't plug it in; hand it to IT/security","Plug it in to find the owner","Give it to a friend","Use it at work"],e:"Dropped USB drives are a known attack vector that can install malware instantly."},
+ {t:"Social Engineering",q:"What is pretexting?",o:["Inventing a believable scenario to trick someone into sharing information","Pre-writing emails","Testing software before release","Encrypting text"],e:"E.g. pretending to be IT support who 'needs your password to fix an issue'."},
+ {t:"Linux",q:"Which Linux command changes file permissions?",o:["chmod","chown","ls","cd"],e:"chmod changes permissions (rwx); chown changes ownership."},
+ {t:"Linux",q:"Why is 'chmod 777 file' dangerous?",o:["It gives everyone read, write and execute permission","It deletes the file","It hides the file","It has no risk"],e:"777 means any user on the system can modify or execute the file."},
+ {t:"Linux",q:"Where are user password hashes stored on Linux?",o:["/etc/shadow","/etc/passwd","/home/user","/var/log"],e:"/etc/shadow holds password hashes and is readable only by root."},
+ {t:"Linux",q:"What does the sudo command do?",o:["Runs a command as another user, usually root","Copies a file","Shuts down the system","Installs a package"],e:"sudo = 'superuser do' — temporary elevated privileges."},
+ {t:"Linux",q:"Where can you find authentication logs on Debian/Ubuntu?",o:["/var/log/auth.log","/etc/hosts","/tmp/log","/bin/log"],e:"auth.log records SSH logins, sudo usage and other auth events."},
+ {t:"Linux",q:"Which command lists listening ports on modern Linux?",o:["ss -tulpn","chmod -R 755","cat /etc/hosts","mkdir -p"],e:"ss -tulpn shows TCP/UDP listening sockets and the processes that own them."},
+ {t:"Defense",q:"Why is keeping software updated important?",o:["It closes known vulnerabilities","It only changes the design","It slows the computer","It isn't important"],e:"Updates frequently contain security patches for known flaws."},
+ {t:"Defense",q:"What does the 3-2-1 backup rule mean?",o:["3 copies, 2 different media, 1 offsite","3 days, 2 weeks, 1 month","3 passwords, 2 logins, 1 email","3 servers, 2 networks, 1 firewall"],e:"Keep three copies of data on two media types with one stored offsite."},
+ {t:"Defense",q:"What is the principle of least privilege?",o:["Give each user only the access they need","Give everyone admin rights","Work without passwords","Allow only one user"],e:"Minimal permissions limit the damage of a compromised account."},
+ {t:"Defense",q:"What does an IDS do?",o:["Detects suspicious activity and raises alerts","Encrypts files","Generates passwords","Speeds up websites"],e:"An Intrusion Detection System alerts; an IPS can also block."},
+ {t:"Defense",q:"What does EDR stand for?",o:["Endpoint Detection and Response","Encrypted Data Recovery","External DNS Routing","Emergency Disaster Recovery"],e:"EDR tools monitor endpoints for malicious behavior and help respond to it."},
+ {t:"Defense",q:"Which action is riskiest on open public Wi-Fi?",o:["Logging into banking without protection","Checking the weather","Reading news","Streaming music"],e:"Traffic on open networks can be intercepted. Use a VPN or wait."},
+ {t:"Terminology",q:"What is a zero-day vulnerability?",o:["A flaw unknown to or unpatched by the vendor","A zero-risk issue","A newly installed program","A one-day license"],e:"Zero-days are exploited before a fix exists, giving defenders 'zero days' to prepare."},
+ {t:"Terminology",q:"What is a CVE?",o:["A public identifier for a known vulnerability","An antivirus product","An encryption algorithm","A programming language"],e:"Common Vulnerabilities and Exposures — e.g. CVE-2021-44228 (Log4Shell)."},
+ {t:"Terminology",q:"What is penetration testing?",o:["Authorized simulated attacks to find weaknesses","Illegal hacking","Repairing computers","Installing software"],e:"Pentesting is legal testing done with the owner's permission."},
+ {t:"Terminology",q:"Who is a 'white hat' hacker?",o:["An ethical hacker who improves security legally","A criminal hacker","A beginner","A virus author"],e:"White hat = ethical, black hat = criminal, grey hat = somewhere in between."},
+ {t:"Terminology",q:"What is an exploit?",o:["Code or a technique that takes advantage of a vulnerability","An antivirus update","A secure password","A network cable"],e:"Exploits turn a vulnerability into actual access or control."},
+ {t:"Terminology",q:"What is a SOC?",o:["Security Operations Center","A social network","An operating system","An encryption standard"],e:"A SOC monitors and responds to security events, often 24/7."},
+ {t:"Terminology",q:"What is a honeypot?",o:["A decoy system designed to attract and study attackers","A type of malware","An encrypted disk","A password manager"],e:"Honeypots look vulnerable on purpose to detect and study intrusions."}
+];
+$("#bankN").textContent=BANK.length;
+
+const QN=20,QTIME=25;
+let mode="practice",quiz=[],cur=0,answers=[],tmr=null,deadline=0,t0=0;
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const best=()=>store.get("cs_best",null);
+function updBest(){const b=best();$("#kBest").textContent=b===null?"–":b+"%";}
+updBest();
+
+function newQuiz(){
+  clearInterval(tmr);
+  quiz=shuffle(BANK).slice(0,QN).map(x=>{const opts=shuffle(x.o.map((t,i)=>({t,ok:i===0})));return {...x,opts,correct:opts.findIndex(o=>o.ok)};});
+  cur=0;answers=Array(QN).fill(null);t0=Date.now();deadline=Date.now()+QTIME*1000;renderQ();
+}
+function answer(i){
+  if(answers[cur]!==null)return;answers[cur]=i;
+  if(mode==="exam"){clearInterval(tmr);renderQ();setTimeout(advanceExam,450);}else renderQ();
+}
+function advanceExam(){if(answers.every(a=>a!==null))return showResult();const nx=answers.findIndex(a=>a===null);cur=nx;deadline=Date.now()+QTIME*1000;renderQ();}
+function startTimer(){
+  clearInterval(tmr);if(mode!=="exam"||answers[cur]!==null)return;
+  tmr=setInterval(()=>{const left=Math.max(0,deadline-Date.now());const el=$("#tbar");if(!el){clearInterval(tmr);return;}
+    el.style.width=(left/(QTIME*1000)*100)+"%";$("#tsec").textContent=Math.ceil(left/1000)+"s";$("#timer").classList.toggle("low",left<6000);
+    if(left<=0){clearInterval(tmr);answers[cur]=-1;toast("⏱ Time's up!");advanceExam();}},100);
+}
+function renderQ(){
+  const q=quiz[cur],a=answers[cur],done=answers.filter(x=>x!==null).length,exam=mode==="exam";
+  const dotCls=i=>{const v=answers[i];if(v===null)return "";if(exam)return "done";return v===quiz[i].correct?"ok":"bad";};
+  $("#quizBox").innerHTML=`
+    <div class="quiz-top"><span class="qcount">QUESTION ${String(cur+1).padStart(2,"0")} / ${QN}</span><span class="qtopic">${esc(q.t)}</span></div>
+    <div class="progress"><div style="width:${done/QN*100}%"></div></div>
+    ${exam&&a===null?`<div class="timer" id="timer">⏱<div class="t"><div id="tbar" style="width:${Math.max(0,deadline-Date.now())/(QTIME*10)}%"></div></div><span id="tsec">${Math.ceil(Math.max(0,deadline-Date.now())/1000)}s</span></div>`:""}
+    <div class="dots">${quiz.map((_,i)=>`<button data-i="${i}" class="${i===cur?"cur ":""}${dotCls(i)}" ${exam?"disabled":""}>${i+1}</button>`).join("")}</div>
+    <div class="qtext">${esc(q.q)}</div>
+    <div class="opts">${q.opts.map((o,i)=>{let c="";if(a!==null&&a!==undefined){if(exam){if(i===a)c="picked";}else{if(i===q.correct)c="correct";else if(i===a)c="wrong";}}
+      return `<button class="opt ${c}" data-o="${i}" ${a!==null?"disabled":""}><span class="let">${"ABCD"[i]}</span>${esc(o.t)}</button>`;}).join("")}</div>
+    ${!exam&&a!==null?`<div class="explain">💡 ${esc(q.e)}</div>`:""}
+    <div class="quiz-nav">
+      ${exam?`<span class="hint">Exam mode · answers revealed at the end</span>`:`<button class="btn" id="prev" ${cur===0?"disabled":""}>← Previous</button>`}
+      <span class="hint"><kbd>1</kbd>–<kbd>4</kbd> answer · <kbd>←</kbd><kbd>→</kbd> navigate</span>
+      ${exam?"":done===QN?`<button class="btn primary" id="finish">See results ✓</button>`:`<button class="btn primary" id="next" ${cur===QN-1?"disabled":""}>Next →</button>`}
+    </div>`;
+  startTimer();
+}
+$("#quizBox").addEventListener("click",e=>{
+  const o=e.target.closest(".opt");if(o&&!o.disabled)return answer(+o.dataset.o);
+  const d=e.target.closest(".dots button");if(d&&!d.disabled){cur=+d.dataset.i;return renderQ();}
+  if(e.target.closest("#prev")){cur--;return renderQ();}
+  if(e.target.closest("#next")){cur++;return renderQ();}
+  if(e.target.closest("#finish"))return showResult();
+  if(e.target.closest("#again")){newQuiz();return $("#quiz").scrollIntoView({behavior:"smooth"});}
+  if(e.target.closest("#share"))return shareRes();
+  if(e.target.closest("#revBtn")){const r=$("#review");r.hidden=!r.hidden;e.target.closest("#revBtn").textContent=r.hidden?"Show answer review":"Hide answer review";}
+});
+document.addEventListener("keydown",e=>{
+  if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)||!quiz.length||!$("#quizBox .opts"))return;
+  const r=$("#quizBox").getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;
+  const k=e.key.toLowerCase(),map={"1":0,"2":1,"3":2,"4":3,a:0,b:1,c:2,d:3};
+  if(k in map){e.preventDefault();answer(map[k]);}
+  else if(mode==="practice"&&e.key==="ArrowRight"&&cur<QN-1){cur++;renderQ();}
+  else if(mode==="practice"&&e.key==="ArrowLeft"&&cur>0){cur--;renderQ();}
+  else if(e.key==="Enter"&&mode==="practice"&&answers.every(a=>a!==null))showResult();
+});
+let lastRes="";
+function showResult(){
+  clearInterval(tmr);
+  const ok=answers.filter((a,i)=>a===quiz[i].correct).length,to=answers.filter(a=>a===-1).length,pct=Math.round(ok/QN*100),secs=Math.round((Date.now()-t0)/1000);
+  const prevBest=best();if(prevBest===null||pct>prevBest)store.set("cs_best",pct);updBest();
+  const hist=[{pct,ok,mode,d:Date.now()},...store.get("cs_hist",[])].slice(0,6);store.set("cs_hist",hist);
+  const [title,msg,col]=pct>=90?["Outstanding! 🏆","You think like a seasoned security pro.","var(--accent)"]:pct>=70?["Great job! 💪","Solid knowledge — a little more practice and you're elite.","var(--accent2)"]:pct>=50?["Not bad 🙂","You know the basics; review the explanations to level up.","var(--warn)"]:["Keep training 📚","Read the explanations below and try again — you'll improve fast.","var(--danger)"];
+  const topics={};quiz.forEach((q,i)=>{topics[q.t]=topics[q.t]||{n:0,ok:0};topics[q.t].n++;if(answers[i]===q.correct)topics[q.t].ok++;});
+  const C=2*Math.PI*76,mmss=`${Math.floor(secs/60)}:${String(secs%60).padStart(2,"0")}`;
+  lastRes=`🛡️ I scored ${pct}% (${ok}/${QN}) on the CyberShield ${mode} quiz in ${mmss}. Can you beat me?`;
+  $("#quizBox").innerHTML=`<div class="result">
+    <div class="ring"><svg width="180" height="180"><circle cx="90" cy="90" r="76" stroke="rgba(255,255,255,.07)" stroke-width="12" fill="none"/>
+      <circle id="arc" cx="90" cy="90" r="76" stroke="${col}" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" style="transition:stroke-dashoffset 1.3s cubic-bezier(.2,.8,.2,1)"/></svg>
+      <div class="val"><div>${pct}%<small>${ok} / ${QN}</small></div></div></div>
+    <h3>${title}</h3><p>${msg}${prevBest!==null&&pct>prevBest?" <b style='color:var(--accent)'>New personal best!</b>":""}</p>
+    <div class="stats">
+      <div class="stat"><b style="color:var(--accent)">${ok}</b><span>Correct</span></div>
+      <div class="stat"><b style="color:var(--danger)">${QN-ok-to}</b><span>Wrong</span></div>
+      <div class="stat"><b style="color:var(--warn)">${to}</b><span>Timed out</span></div>
+      <div class="stat"><b>${mmss}</b><span>Time</span></div>
+      <div class="stat"><b>${Math.max(pct,prevBest??0)}%</b><span>Best</span></div>
+    </div>
+    <div class="res-actions"><button class="btn primary" id="again">🔀 New 20 questions</button><button class="btn" id="share">⧉ Copy result</button><button class="btn ghost" id="revBtn">Show answer review</button></div>
+    <div class="res-cols">
+      <div><h4>Score by topic</h4><div class="bars">${Object.entries(topics).sort((a,b)=>b[1].n-a[1].n).map(([t,v])=>`<div class="bar-row" style="cursor:default"><span>${esc(t)}</span><div class="track"><div class="fill" style="width:${v.ok/v.n*100}%;background:${v.ok/v.n>=.7?"var(--accent)":v.ok/v.n>=.4?"var(--warn)":"var(--danger)"}"></div></div><b>${v.ok}/${v.n}</b></div>`).join("")}</div></div>
+      <div><h4>Recent attempts</h4><div class="hist">${hist.map(h=>`<div><span>${new Date(h.d).toLocaleDateString([], {month:"short",day:"numeric"})} · ${h.mode}</span><b style="color:${h.pct>=70?"var(--accent)":h.pct>=50?"var(--warn)":"var(--danger)"}">${h.pct}%</b></div>`).join("")}</div></div>
+    </div>
+    <div class="review" id="review" hidden>${quiz.map((q,i)=>{const a=answers[i],g=a===q.correct;return `<div class="rv ${g?"ok":"bad"}"><b>${i+1}. ${esc(q.q)}</b>
+      ${g?`<span class="a">✓ ${esc(q.opts[q.correct].t)}</span>`:`<span class="y">✗ ${a===-1?"Time ran out":esc(q.opts[a].t)}</span><br><span class="a">✓ ${esc(q.opts[q.correct].t)}</span>`}<span class="e">${esc(q.e)}</span></div>`;}).join("")}</div>
+  </div>`;
+  requestAnimationFrame(()=>setTimeout(()=>{const a=$("#arc");if(a)a.style.strokeDashoffset=C*(1-ok/QN);},60));
+  if(pct>=80)confetti();
+}
+async function shareRes(){toast(await copyText(lastRes)?"✓ Result copied to clipboard":"Copy failed","ok");}
+$("#modes").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||b.dataset.m===mode)return;mode=b.dataset.m;$$("#modes button").forEach(x=>x.classList.toggle("on",x===b));newQuiz();toast(mode==="exam"?"⏱ Exam mode: 25s per question, answers revealed at the end":"📘 Practice mode: instant feedback with explanations");});
+$("#newQuiz").onclick=newQuiz;
+
+function confetti(){if(reduced)return;const c=document.createElement("canvas");c.id="confetti";document.body.appendChild(c);const ctx=c.getContext("2d");c.width=innerWidth;c.height=innerHeight;
+  const cols=["#2bf0b4","#4aa8ff","#a07bff","#ffb340","#ff4d6d"];const ps=Array.from({length:160},()=>({x:innerWidth/2,y:innerHeight*.45,vx:(Math.random()-.5)*16,vy:Math.random()*-14-4,s:Math.random()*6+4,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cols[Math.floor(Math.random()*5)]}));
+  const end=performance.now()+3200;(function f(t){ctx.clearRect(0,0,c.width,c.height);for(const p of ps){p.vy+=.35;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);ctx.restore();}
+    if(t<end)requestAnimationFrame(f);else c.remove();})(performance.now());}
+
+/* ============ boot ============ */
+newQuiz();
+loadNews(false);
+</script>
+</body>
+</html>
